@@ -1,7 +1,7 @@
 "use client"
 
 import * as React from "react"
-import { addDays, format } from "date-fns"
+import { format } from "date-fns"
 import { Calendar as CalendarIcon } from "lucide-react"
 import { type DateRange } from "react-day-picker"
 
@@ -41,7 +41,7 @@ export function DatePickerWithRange({
                 format(dateRange.from, "LLL dd, y")
               )
             ) : (
-              <span>Pick a dateRange</span>
+              <span>How long will your event go on for?</span>
             )}
           </Button>
         </PopoverTrigger>

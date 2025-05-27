@@ -38,7 +38,7 @@ export function WeatherPanel({ dayData }) {
   }
 
   return (
-    <div>
+    <div className="m-4">
       <Line
         options={chartOptions}
         data={chartData}

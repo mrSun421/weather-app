@@ -13,9 +13,8 @@ import {
   SelectGroup,
   SelectLabel,
 } from "@/components/ui/select"
-import { Input } from "./input";
-import { Button } from "./button";
 import { LocationEditor } from "./locationEditor";
+import { TimePickerWithRange } from "./timePicker";
 
 
 export function EventPanel() {
@@ -258,7 +257,7 @@ export function EventPanel() {
   }
   const [dateRange, setDateRange] = useState<DateRange | undefined>({
     from: new Date(),
-    to: addDays(new Date(), 20),
+    to: addDays(new Date(), 30),
   });
 
 
@@ -288,7 +287,7 @@ export function EventPanel() {
         newTimeRange.to = 17;
         break;
       case "evening":
-        newTimeRange.from = 5;
+        newTimeRange.from = 17;
         newTimeRange.to = 21;
         break;
       default:
@@ -305,46 +304,51 @@ export function EventPanel() {
 
   return (
     <div>
-      <DatePickerWithRange dateRange={dateRange} setDateRange={setDateRange} />
-      <LocationEditor location={location} setLocation={setLocation} isEditingLocation={isEditingLocation} setIsEditingLocation={setIsEditingLocation} />
-      <Select value={weekday} onValueChange={setWeekday}>
-        <SelectTrigger className="w-fit">
-          <SelectValue />
-        </SelectTrigger>
-        <SelectContent>
-          <SelectGroup>
-            <SelectLabel>Which Day of the Week?</SelectLabel>
-            <SelectItem value="Sunday">Every Sunday</SelectItem>
-            <SelectItem value="Monday">Every Monday</SelectItem>
-            <SelectItem value="Tuesday">Every Tuesday</SelectItem>
-            <SelectItem value="Wednesday">Every Wednesday</SelectItem>
-            <SelectItem value="Thursday">Every Thursday</SelectItem>
-            <SelectItem value="Friday">Every Friday</SelectItem>
-            <SelectItem value="Saturday">Every Saturday</SelectItem>
-          </SelectGroup>
-        </SelectContent>
-      </Select>
-      <Select value={timeRange.preset} onValueChange={handlePresetUpdate}>
-        <SelectTrigger className="w-fit">
-          <SelectValue />
-        </SelectTrigger>
-        <SelectContent>
-          <SelectGroup>
-            <SelectLabel>Preset Times</SelectLabel>
-            <SelectItem value="day">Whole Day</SelectItem>
-            <SelectItem value="morning">Morning</SelectItem>
-            <SelectItem value="afternoon">Afternoon</SelectItem>
-            <SelectItem value="evening">Evening</SelectItem>
-            <SelectItem value="custom">Custom</SelectItem>
-          </SelectGroup>
-        </SelectContent>
-      </Select>
-
-      <Separator />
+      <div className="flex gap-4 flex-wrap">
+        <LocationEditor location={location} setLocation={setLocation} isEditingLocation={isEditingLocation} setIsEditingLocation={setIsEditingLocation} />
+        <DatePickerWithRange dateRange={dateRange} setDateRange={setDateRange} />
+        <Select value={weekday} onValueChange={setWeekday} className="justify-end">
+          <SelectTrigger className="w-fit">
+            <SelectValue />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectGroup>
+              <SelectLabel>Which Day of the Week?</SelectLabel>
+              <SelectItem value="Sunday">Every Sunday</SelectItem>
+              <SelectItem value="Monday">Every Monday</SelectItem>
+              <SelectItem value="Tuesday">Every Tuesday</SelectItem>
+              <SelectItem value="Wednesday">Every Wednesday</SelectItem>
+              <SelectItem value="Thursday">Every Thursday</SelectItem>
+              <SelectItem value="Friday">Every Friday</SelectItem>
+              <SelectItem value="Saturday">Every Saturday</SelectItem>
+            </SelectGroup>
+          </SelectContent>
+        </Select>
+        <Select value={timeRange.preset} onValueChange={handlePresetUpdate} >
+          <SelectTrigger className="w-fit">
+            <SelectValue />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectGroup>
+              <SelectLabel>Preset Times</SelectLabel>
+              <SelectItem value="day">Whole Day</SelectItem>
+              <SelectItem value="morning">Morning</SelectItem>
+              <SelectItem value="afternoon">Afternoon</SelectItem>
+              <SelectItem value="evening">Evening</SelectItem>
+              <SelectItem value="custom">Custom</SelectItem>
+            </SelectGroup>
+          </SelectContent>
+        </Select>
+      </div>
       {
-        weatherData["days"].map((dayData) => {
+        <TimePickerWithRange timeRange={timeRange} setTimeRange={setTimeRange} />
+      }
+
+      <Separator className="m-4" />
+      {
+        weatherData["days"].map((dayData, i) => {
           return (
-            <WeatherPanel dayData={dayData} />
+            <WeatherPanel key={i} dayData={dayData} />
           )
         })
       }

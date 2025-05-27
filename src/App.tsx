@@ -11,7 +11,7 @@ function App() {
   // });
 
   return (
-    <div>
+    <div className="m-8">
       <EventPanel />
     </div>
   );
