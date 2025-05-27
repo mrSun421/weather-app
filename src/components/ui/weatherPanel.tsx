@@ -7,7 +7,6 @@ export function WeatherPanel({ dayData }: { dayData: JSON }) {
   const temps: Array<number> = hoursData.map((hourData) => hourData["temp"]);
   const feelsLikes = hoursData.map((hoursData) => hoursData["feelslike"]);
 
-  console.log(hoursData);
   Chart.register(
     CategoryScale,
     LinearScale,
