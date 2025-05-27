@@ -17,7 +17,7 @@ export function LocationEditor({ location, setLocation, isEditingLocation, setIs
   if (isEditingLocation) {
     return (
       <div onKeyDown={handleEnter}>
-        <Input placeholder="Location" value={location ?? ''} onChange={handleChange} className="field-sizing-content" />
+        <Input placeholder="Location" value={location ?? ''} onChange={handleChange} className="" />
         <Button type="button" onClick={() => setIsEditingLocation(false)}>Set Location</Button>
       </div>
     )
