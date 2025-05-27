@@ -1,7 +1,10 @@
 import { CategoryScale, Chart, Legend, LinearScale, LineElement, PointElement, Title, Tooltip } from 'chart.js/auto';
+import { useState } from 'react';
 import { Line } from 'react-chartjs-2';
+import { type DateRange } from 'react-day-picker';
+import { DatePickerWithRange } from './datePickerWithRange';
 
-export function WeatherPanel({ dayData }: { dayData: JSON }) {
+export function WeatherPanel({ dayData }) {
   const hoursData = dayData["hours"];
   const times: Array<Date> = hoursData.map((hourData) => new Date(hourData["datetimeEpoch"] * 1000));
   const temps: Array<number> = hoursData.map((hourData) => hourData["temp"]);
