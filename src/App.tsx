@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
-import { WeatherPanel } from "./weatherPanel.tsx";
+import { WeatherPanel } from '@/components/ui/weatherPanel.tsx';
+import { DatePickerWithRange } from "./components/ui/datePickerWithRange.tsx";
 
 function App() {
   // const [weatherData, setWeatherData] = useState({});
@@ -253,6 +254,7 @@ function App() {
 
   return (
     <div>
+      <DatePickerWithRange />
       {
         daysData.map((dayData, i) => {
           return (
