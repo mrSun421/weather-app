@@ -1,7 +1,7 @@
 import { useState } from "react"
 import { Separator } from "./separator"
 import { WeatherPanel } from "./weatherPanel"
-import { addDays } from 'date-fns';
+import { addDays, nextMonday, nextSunday, nextWednesday, nextFriday, nextTuesday, nextThursday, nextSaturday, getDate } from 'date-fns';
 import { DatePickerWithRange } from "./datePickerWithRange";
 import { type DateRange } from "react-day-picker";
 import {
@@ -15,6 +15,26 @@ import {
 } from "@/components/ui/select"
 import { LocationEditor } from "./locationEditor";
 import { TimePickerWithRange } from "./timePicker";
+import {
+  Carousel,
+  CarouselContent,
+  CarouselItem,
+  CarouselNext,
+  CarouselPrevious,
+} from "@/components/ui/carousel"
+
+const Weekdays = {
+  'Sunday': 0,
+  'Monday': 1,
+  'Tuesday': 2,
+  'Wednesday': 3,
+  'Thursday': 4,
+  'Friday': 5,
+  'Saturday': 6,
+} as const;
+
+type Weekday = keyof typeof Weekdays;
+type WeekdayValue = typeof Weekdays[Weekday];
 
 
 export function EventPanel() {
@@ -255,7 +275,7 @@ export function EventPanel() {
       "moonphase": 0
     }
   }
-  const [dateRange, setDateRange] = useState<DateRange | undefined>({
+  const [dateRange, setDateRange] = useState<DateRange>({
     from: new Date(),
     to: addDays(new Date(), 30),
   });
@@ -298,16 +318,40 @@ export function EventPanel() {
     setTimeRange(newTimeRange);
   }
 
-  const [weekday, setWeekday] = useState("Sunday");
+  console.log(typeof nextThursday)
+  const [weekday, setWeekday] = useState<Weekday>("Sunday");
   const [location, setLocation] = useState(null);
   const [isEditingLocation, setIsEditingLocation] = useState(false);
+  function getNextWeekdayFunction(weekday: Weekday) {
+    switch (weekday) {
+      case "Sunday":
+        return nextSunday;
+      case "Monday":
+        return nextMonday;
+      case "Tuesday":
+        return nextTuesday;
+      case "Wednesday":
+        return nextWednesday;
+      case "Thursday":
+        return nextThursday;
+      case "Friday":
+        return nextFriday;
+      case "Saturday":
+        return nextSaturday;
+    }
+  }
+  function calculateStartingDate() {
+    let nextFunc = getNextWeekdayFunction(weekday) ?? (date => date);
+
+    return nextFunc(dateRange.from ?? new Date());
+  }
 
   return (
     <div>
       <div className="grid gap-4 flex-nowrap auto-rows-auto justify-evenly grid-flow-row-dense">
         <div className="flex flex-wrap gap-2">
           <LocationEditor location={location} setLocation={setLocation} isEditingLocation={isEditingLocation} setIsEditingLocation={setIsEditingLocation} />
-          <DatePickerWithRange dateRange={dateRange} setDateRange={setDateRange} />
+          <DatePickerWithRange dateRange={dateRange} setDateRange={setDateRange} className="" />
         </div>
 
         <div className="flex gap-2 flex-wrap">
@@ -346,21 +390,26 @@ export function EventPanel() {
           </Select>
           <TimePickerWithRange timeRange={timeRange} setTimeRange={setTimeRange} className="" />
         </div>
-
       </div>
-
-
 
       <Separator className="m-4" />
 
       <div className="grid justify-center">
-        {
-          weatherData["days"].map((dayData, i) => {
-            return (
-              <WeatherPanel key={i} dayData={dayData} className="" />
-            )
-          })
-        }
+        <Carousel className="w-full">
+          <CarouselContent>
+            {
+              weatherData["days"].map((dayData, i) => {
+                return (
+                  <CarouselItem key={i}>
+                    <WeatherPanel key={i} dayData={dayData} className="" />
+                  </CarouselItem>
+                )
+              })
+            }
+          </CarouselContent>
+          <CarouselPrevious />
+          <CarouselNext />
+        </Carousel>
       </div>
     </div >
   )
