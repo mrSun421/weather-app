@@ -1,6 +1,9 @@
 import { useEffect, useState } from "react";
 import { WeatherPanel } from '@/components/ui/weatherPanel.tsx';
 import { DatePickerWithRange } from "./components/ui/datePickerWithRange.tsx";
+import { type DateRange } from "react-day-picker";
+import { addDays, format } from "date-fns"
+import { setDate } from "date-fns/fp/setDate";
 
 function App() {
   // const [weatherData, setWeatherData] = useState({});
@@ -252,9 +255,14 @@ function App() {
 
   const daysData: Array<JSON> = weatherData["days"];
 
+  const [dateRange, setDateRange] = useState<DateRange | undefined>({
+    from: new Date(),
+    to: addDays(new Date(), 20),
+  });
+
   return (
     <div>
-      <DatePickerWithRange />
+      <DatePickerWithRange dateRange={dateRange} setDateRange={setDateRange} />
       {
         daysData.map((dayData, i) => {
           return (
