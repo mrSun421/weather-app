@@ -42,8 +42,10 @@ export function TimePickerWithRange({ className, timeRange, setTimeRange }) {
     setTimeRange(newTimeRange);
   }
 
+  const disabled = timeRange.preset !== "custom";
+
   return (<div className={cn("flex gap-2", className)}>
-    <Select value={`${timeRange.from}`} onValueChange={handleStartingTimeUpdate} disabled={timeRange.preset !== "custom"} >
+    <Select value={`${timeRange.from}`} onValueChange={handleStartingTimeUpdate} disabled={disabled} >
       <SelectTrigger className="w-fit">
         <SelectValue />
       </SelectTrigger>
@@ -56,9 +58,11 @@ export function TimePickerWithRange({ className, timeRange, setTimeRange }) {
 
         </SelectGroup>
       </SelectContent>
-      <p> to </p>
+
+
     </Select>
-    <Select value={`${timeRange.to}`} onValueChange={handleEndingTimeUpdate} disabled={timeRange.preset !== "custom"} >
+    <p className={`text-nowrap text-sm py-2 ${disabled ? 'opacity-50' : ''}`}> to </p>
+    <Select value={`${timeRange.to}`} onValueChange={handleEndingTimeUpdate} disabled={disabled} >
       <SelectTrigger className="w-fit">
         <SelectValue />
       </SelectTrigger>

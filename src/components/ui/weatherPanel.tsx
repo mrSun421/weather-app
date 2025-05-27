@@ -1,10 +1,8 @@
+import { cn } from '@/lib/utils';
 import { CategoryScale, Chart, Legend, LinearScale, LineElement, PointElement, Title, Tooltip } from 'chart.js/auto';
-import { useState } from 'react';
 import { Line } from 'react-chartjs-2';
-import { type DateRange } from 'react-day-picker';
-import { DatePickerWithRange } from './datePickerWithRange';
 
-export function WeatherPanel({ dayData }) {
+export function WeatherPanel({ dayData, className }) {
   const hoursData = dayData["hours"];
   const times: Array<Date> = hoursData.map((hourData) => new Date(hourData["datetimeEpoch"] * 1000));
   const temps: Array<number> = hoursData.map((hourData) => hourData["temp"]);
@@ -38,7 +36,7 @@ export function WeatherPanel({ dayData }) {
   }
 
   return (
-    <div className="m-4">
+    <div className={cn("m-4", className)}>
       <Line
         options={chartOptions}
         data={chartData}

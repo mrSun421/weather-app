@@ -304,54 +304,64 @@ export function EventPanel() {
 
   return (
     <div>
-      <div className="flex gap-4 flex-wrap">
-        <LocationEditor location={location} setLocation={setLocation} isEditingLocation={isEditingLocation} setIsEditingLocation={setIsEditingLocation} />
-        <DatePickerWithRange dateRange={dateRange} setDateRange={setDateRange} />
-        <Select value={weekday} onValueChange={setWeekday} className="justify-end">
-          <SelectTrigger className="w-fit">
-            <SelectValue />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectGroup>
-              <SelectLabel>Which Day of the Week?</SelectLabel>
-              <SelectItem value="Sunday">Every Sunday</SelectItem>
-              <SelectItem value="Monday">Every Monday</SelectItem>
-              <SelectItem value="Tuesday">Every Tuesday</SelectItem>
-              <SelectItem value="Wednesday">Every Wednesday</SelectItem>
-              <SelectItem value="Thursday">Every Thursday</SelectItem>
-              <SelectItem value="Friday">Every Friday</SelectItem>
-              <SelectItem value="Saturday">Every Saturday</SelectItem>
-            </SelectGroup>
-          </SelectContent>
-        </Select>
-        <Select value={timeRange.preset} onValueChange={handlePresetUpdate} >
-          <SelectTrigger className="w-fit">
-            <SelectValue />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectGroup>
-              <SelectLabel>Preset Times</SelectLabel>
-              <SelectItem value="day">Whole Day</SelectItem>
-              <SelectItem value="morning">Morning</SelectItem>
-              <SelectItem value="afternoon">Afternoon</SelectItem>
-              <SelectItem value="evening">Evening</SelectItem>
-              <SelectItem value="custom">Custom</SelectItem>
-            </SelectGroup>
-          </SelectContent>
-        </Select>
+      <div className="grid gap-4 flex-nowrap auto-rows-auto justify-evenly grid-flow-row-dense">
+        <div className="flex flex-wrap gap-2">
+          <LocationEditor location={location} setLocation={setLocation} isEditingLocation={isEditingLocation} setIsEditingLocation={setIsEditingLocation} />
+          <DatePickerWithRange dateRange={dateRange} setDateRange={setDateRange} />
+        </div>
+
+        <div className="flex gap-2 flex-wrap">
+          <Select value={weekday} onValueChange={setWeekday} >
+            <SelectTrigger className="w-fit">
+              <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#1f1f1f"><path d="m612-292 56-56-148-148v-184h-80v216l172 172ZM480-80q-83 0-156-31.5T197-197q-54-54-85.5-127T80-480q0-83 31.5-156T197-763q54-54 127-85.5T480-880q83 0 156 31.5T763-763q54 54 85.5 127T880-480q0 83-31.5 156T763-197q-54 54-127 85.5T480-80Zm0-400Zm0 320q133 0 226.5-93.5T800-480q0-133-93.5-226.5T480-800q-133 0-226.5 93.5T160-480q0 133 93.5 226.5T480-160Z" /></svg>
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectGroup>
+                <SelectLabel>Which Day of the Week?</SelectLabel>
+                <SelectItem value="Sunday">Every Sunday</SelectItem>
+                <SelectItem value="Monday">Every Monday</SelectItem>
+                <SelectItem value="Tuesday">Every Tuesday</SelectItem>
+                <SelectItem value="Wednesday">Every Wednesday</SelectItem>
+                <SelectItem value="Thursday">Every Thursday</SelectItem>
+                <SelectItem value="Friday">Every Friday</SelectItem>
+                <SelectItem value="Saturday">Every Saturday</SelectItem>
+              </SelectGroup>
+            </SelectContent>
+          </Select>
+          <Select value={timeRange.preset} onValueChange={handlePresetUpdate} >
+            <SelectTrigger className="w-fit">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectGroup>
+                <SelectLabel>Preset Times</SelectLabel>
+                <SelectItem value="day">Whole Day</SelectItem>
+                <SelectItem value="morning">Morning</SelectItem>
+                <SelectItem value="afternoon">Afternoon</SelectItem>
+                <SelectItem value="evening">Evening</SelectItem>
+                <SelectItem value="custom">Custom</SelectItem>
+              </SelectGroup>
+            </SelectContent>
+          </Select>
+          <TimePickerWithRange timeRange={timeRange} setTimeRange={setTimeRange} className="" />
+        </div>
+
       </div>
-      {
-        <TimePickerWithRange timeRange={timeRange} setTimeRange={setTimeRange} />
-      }
+
+
 
       <Separator className="m-4" />
-      {
-        weatherData["days"].map((dayData, i) => {
-          return (
-            <WeatherPanel key={i} dayData={dayData} />
-          )
-        })
-      }
+
+      <div className="grid justify-center">
+        {
+          weatherData["days"].map((dayData, i) => {
+            return (
+              <WeatherPanel key={i} dayData={dayData} className="" />
+            )
+          })
+        }
+      </div>
     </div >
   )
 }
