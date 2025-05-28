@@ -136,7 +136,7 @@ export function WeatherPanel({ date, location, timeRange, className, unitGroup =
       case 'temp':
         return unitGroup === 'us' ? '°F' : unitGroup === 'base' ? 'K' : '°C';
       case 'wind':
-        return unitGroup === 'base' ? ' m/s' : unitGroup === 'metric' ? ' km/h' : ' mph';
+        return unitGroup === 'base' ? ' m/s' : unitGroup === 'metric' ? ' kmph' : ' mph';
       case 'distance':
         return unitGroup === 'us' || unitGroup === 'uk' ? ' mi' : ' km';
       case 'precip':

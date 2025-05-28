@@ -17,7 +17,7 @@ interface WeatherCarouselProps {
 export function WeatherCarousel({ dates, location, timeRange, onExtend, unitGroup = 'us' }: WeatherCarouselProps) {
   return (
     <Carousel 
-      className="w-full max-w-4xl" 
+      className="w-full max-w-[95vw] md:max-w-4xl px-8 sm:px-12" 
       opts={{
         align: "center",
         slidesToScroll: 1,
@@ -53,8 +53,8 @@ export function WeatherCarousel({ dates, location, timeRange, onExtend, unitGrou
           </div>
         </CarouselItem>
       </CarouselContent>
-      <CarouselPrevious />
-      <CarouselNext />
+      <CarouselPrevious className="-left-2 sm:-left-8 size-8 sm:size-10" />
+      <CarouselNext className="-right-2 sm:-right-8 size-8 sm:size-10" />
     </Carousel>
   );
 }
