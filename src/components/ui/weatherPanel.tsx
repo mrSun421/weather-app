@@ -1,7 +1,9 @@
 import { cn } from '@/lib/utils';
 import { CategoryScale, Chart, Legend, LinearScale, LineElement, PointElement, Title, Tooltip } from 'chart.js/auto';
-import { isAfter, isBefore, format } from 'date-fns';
+import { isAfter, isBefore, format, getUnixTime } from 'date-fns';
 import { Line } from 'react-chartjs-2';
+import { useEffect, useState } from 'react';
+import { weatherClient, type WeatherDayData, type WeatherResponse } from '@/lib/visual-crossing-client';
 
 interface WeatherStatProps {
   icon: string;
@@ -39,19 +41,8 @@ const WeatherIcons = {
 type WeatherIcon = keyof typeof WeatherIcons;
 
 interface WeatherPanelProps {
-  dayData: {
-    datetimeEpoch: number;
-    hours?: Array<{
-      datetimeEpoch: number;
-      temp: number;
-      feelslike: number;
-    }>;
-    temp: number;
-    precipprob: number;
-    severerisk: number;
-    icon: WeatherIcon;
-    windspeed: number;
-  };
+  date: Date;
+  location: string;
   timeRange: {
     from: number;
     to: number;
@@ -100,7 +91,99 @@ function getWeatherComment(temp: number, precipprob: number, risk: number) {
   return { comment: comments.join(" "), shouldCancel };
 }
 
-export function WeatherPanel({ dayData, timeRange, className }: WeatherPanelProps) {
+export function WeatherPanel({ date, location, timeRange, className }: WeatherPanelProps) {
+  const [dayData, setDayData] = useState<WeatherDayData | null>(null);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await weatherClient.GET("/VisualCrossingWebServices/rest/services/timeline/{location}/{startdate}", {
+          params: {
+            query: {
+              key: import.meta.env.VITE_WEATHER_API_KEY,
+              contentType: "json",
+              include: "hours,days,fcst,statsfcst",
+              iconSet: "icons1",
+            },
+            path: {
+              location: location,
+              startdate: String(getUnixTime(date)),
+            }
+          }
+        });
+
+        if (!response.data) {
+          setError("No response from weather service");
+          setDayData(null);
+          return;
+        }
+
+        const weatherData = response.data as unknown as WeatherResponse;
+
+        if (weatherData.error) {
+          setError(weatherData.error);
+          setDayData(null);
+        } else if (weatherData.days?.[0]) {
+          setDayData(weatherData.days[0]);
+          setError(null);
+        } else {
+          setError("No weather data available");
+          setDayData(null);
+        }
+      } catch (err) {
+        setError(err instanceof Error ? err.message : "Failed to fetch weather data");
+        setDayData(null);
+      }
+    };
+
+    if (location) {
+      fetchData();
+    }
+  }, [date, location]);
+
+  if (error) {
+    return (
+      <div className={cn("p-6 transition-all duration-200", className)}>
+        <div className="space-y-6">
+          <div className="flex items-center justify-between">
+            <h2 className="text-2xl font-semibold text-ultra_violet dark:text-cream">
+              {format(date, "EEEE, MMMM d")}
+            </h2>
+          </div>
+          <div className="rounded-lg border border-red-200 bg-red-50 p-4 text-red-700 dark:border-red-900/50 dark:bg-red-900/20 dark:text-red-200">
+            <p className="text-sm">{error}</p>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  if (!dayData) {
+    return (
+      <div className={cn("p-6 transition-all duration-200", className)}>
+        <div className="space-y-6">
+          <div className="flex items-center justify-between">
+            <h2 className="text-2xl font-semibold text-ultra_violet dark:text-cream">
+              {format(date, "EEEE, MMMM d")}
+            </h2>
+            <div className="flex items-center gap-2 text-steel_blue dark:text-mindaro">
+              <span className="material-symbols-outlined text-3xl animate-pulse">
+                cloud
+              </span>
+              <span className="text-2xl font-medium">Loading...</span>
+            </div>
+          </div>
+          <div className="h-[200px] flex items-center justify-center">
+            <div className="text-ash_gray dark:text-mindaro/70">
+              <p>Loading weather data...</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   const hoursData = dayData.hours ?? [];
   const dayStart = new Date(dayData.datetimeEpoch * 1000);
   const startRange = new Date(dayStart.getFullYear(), dayStart.getMonth(), dayStart.getDate(), timeRange.from - 1);
@@ -172,7 +255,7 @@ export function WeatherPanel({ dayData, timeRange, className }: WeatherPanelProp
       <div className="space-y-6">
         <div className="flex items-center justify-between">
           <h2 className="text-2xl font-semibold text-ultra_violet dark:text-cream">
-            {format(dayStart, "EEEE, MMMM d")}
+            {format(date, "EEEE, MMMM d")}
           </h2>
           <div className="flex items-center gap-2 text-steel_blue dark:text-mindaro">
             <span className="material-symbols-outlined text-3xl">

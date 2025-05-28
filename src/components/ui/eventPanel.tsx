@@ -102,9 +102,6 @@ export function EventPanel() {
   const [weekday, setWeekday] = useState<Weekday>("Sunday");
   const [location, setLocation] = useState<string>("");
   const [isEditingLocation, setIsEditingLocation] = useState(false);
-  const [weatherData, setWeatherData] = useState<{ days: any[] }>({ days: [] });
-  const [weatherDataError, setWeatherDataError] = useState<string | null>(null);
-  const [isLoading, setIsLoading] = useState(false);
 
   const handleDateRangeUpdate = (range: DateRange | undefined) => {
     setDateRange(range ?? {
@@ -113,47 +110,7 @@ export function EventPanel() {
     });
   };
 
-  useEffect(() => {
-    if (!location || !dateRange.from) return;
-
-    const dates = calculateArrayOfDates(dateRange, weekday);
-    if (dates.length === 0) return;
-
-    setIsLoading(true);
-    setWeatherDataError(null);
-
-    client.GET("/VisualCrossingWebServices/rest/services/timeline/{location}/{startdate}/{enddate}", {
-      params: {
-        query: {
-          key: import.meta.env.VITE_WEATHER_API_KEY,
-          contentType: "json",
-          include: "hours,days,fcst,statsfcst",
-          iconSet: "icons1",
-        },
-        path: {
-          location,
-          startdate: String(getUnixTime(dates[0])),
-          enddate: String(getUnixTime(dates[dates.length - 1])),
-        }
-      }
-    })
-    .then(({ data, error }) => {
-      if (error) {
-        setWeatherData({ days: [] });
-        setWeatherDataError(error as string);
-      } else if (data) {
-        setWeatherData(data);
-        setWeatherDataError(null);
-      }
-    })
-    .catch(error => {
-      setWeatherDataError(error.message);
-      setWeatherData({ days: [] });
-    })
-    .finally(() => {
-      setIsLoading(false);
-    });
-  }, [location, dateRange, weekday]);
+  const dates = dateRange.from ? calculateArrayOfDates(dateRange, weekday) : [];
 
   return (
     <div className="animate-in container mx-auto max-w-4xl px-4">
@@ -251,21 +208,16 @@ export function EventPanel() {
               <div className="flex items-center justify-center p-8 text-ash_gray dark:text-mindaro/70">
                 <span className="text-lg font-medium">Add a location to view weather data</span>
               </div>
-            ) : isLoading ? (
+            ) : dates.length === 0 ? (
               <div className="flex items-center justify-center p-8 text-ash_gray dark:text-mindaro/70">
-                <svg className="animate-spin h-8 w-8 mr-3" viewBox="0 0 24 24">
-                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none" />
-                  <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
-                </svg>
-                <span className="text-lg font-medium">Loading weather data...</span>
-              </div>
-            ) : weatherDataError ? (
-              <div className="rounded-lg bg-red-50/50 p-6 text-red-700 dark:bg-red-900/20 dark:text-red-200">
-                <p className="text-lg font-medium">Something went wrong:</p>
-                <p className="mt-2">{weatherDataError}</p>
+                <span className="text-lg font-medium">Select a date range to view weather data.</span>
               </div>
             ) : (
-              <WeatherCarousel weatherData={weatherData} timeRange={timeRange} />
+              <WeatherCarousel 
+                dates={dates}
+                location={location}
+                timeRange={timeRange}
+              />
             )}
           </div>
         </div>
