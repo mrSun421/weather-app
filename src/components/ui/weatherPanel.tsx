@@ -214,7 +214,7 @@ export function WeatherPanel({ date, location, timeRange, className, unitGroup =
   const hoursData = dayData.hours ?? [];
   const dayStart = new Date(dayData.datetimeEpoch * 1000);
   const startRange = new Date(dayStart.getFullYear(), dayStart.getMonth(), dayStart.getDate(), timeRange.from - 1);
-  const endRange = new Date(dayStart.getFullYear(), dayStart.getMonth(), dayStart.getDate(), timeRange.to);
+  const endRange = new Date(dayStart.getFullYear(), dayStart.getMonth(), dayStart.getDate(), timeRange.to + 1);
 
   const hourBasedData = hoursData.filter((hourData) => {
     const thisDate = new Date(hourData.datetimeEpoch * 1000);
