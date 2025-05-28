@@ -1,9 +1,9 @@
 import { cn } from '@/lib/utils';
 import { CategoryScale, Chart, Legend, LinearScale, LineElement, PointElement, Title, Tooltip } from 'chart.js/auto';
-import { isAfter, isBefore, format, getUnixTime } from 'date-fns';
+import { isAfter, isBefore, format } from 'date-fns';
 import { Line } from 'react-chartjs-2';
 import { useEffect, useState } from 'react';
-import { type WeatherDayData, type WeatherResponse, type UnitGroup, fetchWeatherData } from '@/lib/visual-crossing-client';
+import { type WeatherDayData, type UnitGroup, fetchWeatherData } from '@/lib/visual-crossing-client';
 import { useFont } from "@/lib/fontContext";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 
@@ -442,18 +442,18 @@ export function WeatherPanel({ date, location, timeRange, className, unitGroup =
   return (
     <div className={cn("p-6 transition-all duration-200", className)}>
       <div className="space-y-6">
-        <div className="flex items-center justify-between">
-          <h2 className="text-2xl font-semibold text-ultra_violet dark:text-cream">
+        <div className="flex flex-col items-center gap-4 mb-8">
+          <h2 className="text-xl font-semibold text-ultra_violet dark:text-cream text-center">
             {format(date, "EEEE, MMMM d")}
           </h2>
           <button
             onClick={() => setShowTempDialog(true)}
-            className="flex items-center gap-2 text-steel_blue dark:text-mindaro hover:opacity-80 transition-opacity"
+            className="flex items-center gap-3 text-steel_blue dark:text-mindaro hover:opacity-80 transition-opacity"
           >
-            <span className="material-symbols-outlined text-3xl">
+            <span className="material-symbols-outlined !text-[64px]" style={{ fontSize: '64px' }}>
               {WeatherIcons[dayData.icon]}
             </span>
-            <span className="text-2xl font-medium">
+            <span className="text-4xl font-medium">
               {dayData.temp}{getUnitSymbol('temp')}
             </span>
           </button>
