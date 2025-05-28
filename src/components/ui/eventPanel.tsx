@@ -219,21 +219,23 @@ export function EventPanel() {
 
       <Separator className="m-4" />
 
-      <div className="grid justify-center lg:grid-cols-2">
-        {
-          loadingData ? (
-            <p>We're Working on it...</p>
-          ) : (
-            weatherDataError ? (
-              <p>Something went wrong: {weatherDataError}</p>
-            ) :
-              weatherData["days"].filter((_, i) => i % 7 === 0).map((dayData, i) => {
-                return (
-                  <WeatherPanel key={i} dayData={dayData} timeRange={timeRange} className="w-xs md:w-xl max-h-7/10" />
+      <div className="flex justify-center">
+        <div className={`grid justify-center w-fit ${(loadingData || weatherData["days"].length < 2) ? '' : ('lg:grid-cols-2')}`}>
+          {
+            loadingData ? (
+              <p>We're Working on it...</p>
+            ) : (
+              weatherDataError ? (
+                <p>Something went wrong: {weatherDataError}</p>
+              ) :
+                weatherData["days"].filter((_, i) => i % 7 === 0).map((dayData, i) => {
+                  return (
+                    <WeatherPanel key={i} dayData={dayData} timeRange={timeRange} className="w-xs md:w-xl max-h-7/10" />
 
-                )
-              }))
-        }
+                  )
+                }))
+          }
+        </div>
       </div>
     </div>
   )

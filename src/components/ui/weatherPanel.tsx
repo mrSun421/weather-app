@@ -20,7 +20,7 @@ type WeatherIcon = keyof typeof WeatherIcons;
 type WeatherIconValue = typeof WeatherIcons[WeatherIcon];
 
 export function WeatherPanel({ dayData, timeRange, className }) {
-  const hoursData = dayData["hours"];
+  const hoursData = dayData["hours"] ?? [];
 
   const dayStart = new Date(dayData["datetimeEpoch"] * 1000);
   const startRange = new Date(dayStart.getFullYear(), dayStart.getMonth(), dayStart.getDate(), timeRange.from - 1);
@@ -97,12 +97,10 @@ export function WeatherPanel({ dayData, timeRange, className }) {
     weatherComment += "I recommend you cancel.\n";
   }
 
-
-
   return (
     <div className={cn("m-4", className)}>
       <div className='grid justify-center' >
-        <p className='text-2xl'>{format(dayStart, "EEEE PPP")} </p>
+        <p className='text-2xl py-2'>{format(dayStart, "EEEE PPP")} </p>
       </div>
       <div className='grid justify-between gap-2 grid-cols-2'>
         <div className='row-span-3 grid justify-end'>
@@ -125,10 +123,15 @@ export function WeatherPanel({ dayData, timeRange, className }) {
           <p className='text-lg'>{dayData["precipprob"]}&#37;</p>
         </div>
       </div>
-      <Line
-        options={chartOptions}
-        data={chartData}
-      />
+      {
+        hoursData.length !== 0 ? <Line
+          options={chartOptions}
+          data={chartData}
+        /> : (
+          <p>No Data Available.</p>
+        )
+      }
+
     </div>
   )
 }
