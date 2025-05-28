@@ -30,10 +30,10 @@ export function SettingsMenu({ open, onOpenChange }: SettingsMenuProps) {
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent>
-        <DialogHeader>
-          <DialogTitle>Settings</DialogTitle>
-          <DialogDescription>
+      <DialogContent className={`w-[90vw] max-w-[320px] sm:w-full mx-auto p-4 sm:p-6 ${useShantellSans ? 'font-["Shantell_Sans"]' : 'font-["Arial"]'}`}>
+        <DialogHeader className="pb-2">
+          <DialogTitle className="text-lg">Settings</DialogTitle>
+          <DialogDescription className="text-sm">
             Customize your weather dashboard preferences.
           </DialogDescription>
         </DialogHeader>
@@ -85,4 +85,4 @@ export function SettingsMenu({ open, onOpenChange }: SettingsMenuProps) {
       </DialogContent>
     </Dialog>
   )
-}
+} 
