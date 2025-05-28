@@ -1,6 +1,6 @@
-import { useEffect, useState } from "react"
+import { useState } from "react"
 import { WeatherCarousel } from "./weatherCarousel";
-import { addDays, nextMonday, nextSunday, nextWednesday, nextFriday, nextTuesday, nextThursday, nextSaturday, getUnixTime, format } from 'date-fns';
+import { addDays, nextMonday, nextSunday, nextWednesday, nextFriday, nextTuesday, nextThursday, nextSaturday, format } from 'date-fns';
 import { DatePickerWithRange } from "./datePickerWithRange";
 import { type DateRange } from "react-day-picker";
 import {
@@ -14,8 +14,6 @@ import {
 } from "@/components/ui/select"
 import { LocationEditor } from "./locationEditor";
 import { TimePickerWithRange } from "./timePicker";
-import createClient from 'openapi-fetch';
-import type { paths } from '@/lib/visual-crossing-schema';
 import { 
   Drawer,
   DrawerContent,
@@ -87,10 +85,6 @@ function calculateArrayOfDates(dateRange: DateRange, weekday: Weekday): Date[] {
 
   return dates;
 }
-
-const client = createClient<paths>({
-  baseUrl: "https://weather.visualcrossing.com/"
-});
 
 export function EventPanel() {
   const [dateRange, setDateRange] = useState<DateRange>({
