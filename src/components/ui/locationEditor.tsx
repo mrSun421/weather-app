@@ -44,7 +44,7 @@ export function LocationEditor({ location, setLocation, isEditingLocation, setIs
         <Input placeholder="Location" defaultValue={location ?? ''} onChange={handleChange} className="flex-shrink" />
         <Button type="button" onClick={() => setIsEditingLocation(false)} className="flex-shrink">Set Location</Button>
       </div>
-    )
+    );
   } else {
     return (
       <div className={cn("flex flex-nowrap py-2", className )}>
