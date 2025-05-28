@@ -5,6 +5,8 @@
     { "path": "./tsconfig.node.json" }
   ],
   "compilerOptions": {
+    "module": "EXNext",
+    "moduleResolution": "Bundler",
     "baseUrl": ".",
     "paths": {
       "@/*": ["./src/*"]

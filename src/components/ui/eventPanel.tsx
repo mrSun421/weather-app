@@ -1,7 +1,7 @@
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { Separator } from "./separator"
 import { WeatherPanel } from "./weatherPanel"
-import { addDays, nextMonday, nextSunday, nextWednesday, nextFriday, nextTuesday, nextThursday, nextSaturday, getDate } from 'date-fns';
+import { addDays, nextMonday, nextSunday, nextWednesday, nextFriday, nextTuesday, nextThursday, nextSaturday, getUnixTime, isBefore } from 'date-fns';
 import { DatePickerWithRange } from "./datePickerWithRange";
 import { type DateRange } from "react-day-picker";
 import {
@@ -22,6 +22,8 @@ import {
   CarouselNext,
   CarouselPrevious,
 } from "@/components/ui/carousel"
+import createClient from 'openapi-fetch';
+import type { paths } from '@/lib/visual-crossing-schema';
 
 const Weekdays = {
   'Sunday': 0,
@@ -36,249 +38,63 @@ const Weekdays = {
 type Weekday = keyof typeof Weekdays;
 type WeekdayValue = typeof Weekdays[Weekday];
 
+const client = createClient<paths>({
+  baseUrl: "https://weather.visualcrossing.com/"
+});
 
-export function EventPanel() {
-  let weatherData = {
-    "queryCost": 1,
-    "latitude": 33.7483,
-    "longitude": -84.3911,
-    "resolvedAddress": "Atlanta, GA, United States",
-    "address": "Atlanta",
-    "timezone": "America/New_York",
-    "tzoffset": -4,
-    "description": "Similar temperatures continuing with a chance of rain multiple days.",
-    "days": [
-      {
-        "datetime": "2025-05-26",
-        "datetimeEpoch": 1748232000,
-        "tempmax": 81.7,
-        "tempmin": 67.3,
-        "temp": 73.3,
-        "feelslikemax": 83.9,
-        "feelslikemin": 67.3,
-        "feelslike": 73.6,
-        "dew": 67,
-        "humidity": 81.6,
-        "precip": 0.736,
-        "precipprob": 100,
-        "precipcover": 41.67,
-        "preciptype": [
-          "rain"
-        ],
-        "snow": 0,
-        "snowdepth": 0,
-        "windgust": 13.9,
-        "windspeed": 8.1,
-        "winddir": 101.9,
-        "pressure": 1017.3,
-        "cloudcover": 88.8,
-        "visibility": 7.9,
-        "solarradiation": 411.6,
-        "solarenergy": 35.5,
-        "uvindex": 5,
-        "severerisk": 30,
-        "sunrise": "06:30:10",
-        "sunriseEpoch": 1748255410,
-        "sunset": "20:39:38",
-        "sunsetEpoch": 1748306378,
-        "moonphase": 0,
-        "conditions": "Rain, Partially cloudy",
-        "description": "Partly cloudy throughout the day with storms possible.",
-        "icon": "rain",
-        "stations": [
-          "1066W",
-          "KFTY",
-          "0349W",
-          "KATL",
-          "KPDK"
-        ],
-        "source": "comb",
-        "hours": [
-          {
-            "datetime": "04:00:00",
-            "datetimeEpoch": 1748246400,
-            "temp": 68.1,
-            "feelslike": 68.1,
-            "humidity": 92.86,
-            "dew": 65.9,
-            "precip": 0.066,
-            "precipprob": 100,
-            "snow": 0,
-            "snowdepth": 0,
-            "preciptype": [
-              "rain"
-            ],
-            "windgust": 8.1,
-            "windspeed": 2.7,
-            "winddir": 338,
-            "pressure": 1017.5,
-            "visibility": 6,
-            "cloudcover": 93.3,
-            "solarradiation": 526,
-            "solarenergy": 1.9,
-            "uvindex": 0,
-            "severerisk": 10,
-            "conditions": "Rain, Overcast",
-            "icon": "rain",
-            "stations": [
-              "1066W",
-              "KFTY",
-              "KATL",
-              "KPDK"
-            ],
-            "source": "obs"
-          },
-          {
-            "datetime": "05:00:00",
-            "datetimeEpoch": 1748250000,
-            "temp": 67.5,
-            "feelslike": 67.5,
-            "humidity": 95.24,
-            "dew": 66.1,
-            "precip": 0.097,
-            "precipprob": 100,
-            "snow": 0,
-            "snowdepth": 0,
-            "preciptype": [
-              "rain"
-            ],
-            "windgust": 8.1,
-            "windspeed": 2.6,
-            "winddir": 329,
-            "pressure": 1017.7,
-            "visibility": 3.5,
-            "cloudcover": 100,
-            "solarradiation": 532,
-            "solarenergy": 1.9,
-            "uvindex": 0,
-            "severerisk": 10,
-            "conditions": "Rain, Overcast",
-            "icon": "rain",
-            "stations": [
-              "1066W",
-              "KFTY",
-              "KATL",
-              "KPDK"
-            ],
-            "source": "obs"
-          }
-        ]
-      }
-    ],
-    "alerts": [],
-    "stations": {
-      "1066W": {
-        "distance": 1443,
-        "latitude": 33.735,
-        "longitude": -84.39,
-        "useCount": 0,
-        "id": "1066W",
-        "name": "Georgia State University GA US WEATHERSTEM",
-        "quality": 0,
-        "contribution": 0
-      },
-      "KFTY": {
-        "distance": 12440,
-        "latitude": 33.78,
-        "longitude": -84.52,
-        "useCount": 0,
-        "id": "KFTY",
-        "name": "KFTY",
-        "quality": 100,
-        "contribution": 0
-      },
-      "0349W": {
-        "distance": 2676,
-        "latitude": 33.772,
-        "longitude": -84.393,
-        "useCount": 0,
-        "id": "0349W",
-        "name": "Georgia Tech Bobby Dodd Stadium GA US WEATHERSTEM",
-        "quality": 0,
-        "contribution": 0
-      },
-      "GA307": {
-        "distance": 3596,
-        "latitude": 33.781,
-        "longitude": -84.391,
-        "useCount": 0,
-        "id": "GA307",
-        "name": "I75 @ 10th St, GA",
-        "quality": 0,
-        "contribution": 0
-      },
-      "0353W": {
-        "distance": 3182,
-        "latitude": 33.775,
-        "longitude": -84.404,
-        "useCount": 0,
-        "id": "0353W",
-        "name": "Georgia Tech Campus Recreation C GA US WEATHERSTEM",
-        "quality": 0,
-        "contribution": 0
-      },
-      "KATL": {
-        "distance": 11265,
-        "latitude": 33.65,
-        "longitude": -84.42,
-        "useCount": 0,
-        "id": "KATL",
-        "name": "KATL",
-        "quality": 100,
-        "contribution": 0
-      },
-      "KPDK": {
-        "distance": 16910,
-        "latitude": 33.88,
-        "longitude": -84.3,
-        "useCount": 0,
-        "id": "KPDK",
-        "name": "KPDK",
-        "quality": 100,
-        "contribution": 0
-      }
-    },
-    "currentConditions": {
-      "datetime": "18:40:00",
-      "datetimeEpoch": 1748299200,
-      "temp": 79.1,
-      "feelslike": 79.1,
-      "humidity": 63.2,
-      "dew": 65.5,
-      "precip": null,
-      "precipprob": 0,
-      "snow": 0,
-      "snowdepth": 0,
-      "preciptype": null,
-      "windgust": 11.1,
-      "windspeed": 6.7,
-      "winddir": 156,
-      "pressure": 984,
-      "visibility": 1.2,
-      "cloudcover": 70,
-      "solarradiation": 224,
-      "solarenergy": 0.8,
-      "uvindex": 2,
-      "conditions": "Partially cloudy",
-      "icon": "partly-cloudy-day",
-      "stations": [
-        "1066W",
-        "0349W",
-        "GA307",
-        "0353W"
-      ],
-      "source": "obs",
-      "sunrise": "06:30:10",
-      "sunriseEpoch": 1748255410,
-      "sunset": "20:39:38",
-      "sunsetEpoch": 1748306378,
-      "moonphase": 0
+function calculateArrayOfDates(dateRange: DateRange, weekday: Weekday) {
+  const startDate: Date = calculateStartingDate(dateRange, weekday);
+  let dates: Array<Date> = [startDate];
+
+  if (dateRange.to) {
+    let currentDate: Date = addDays(startDate, 7);
+    while (isBefore(currentDate, dateRange.to)) {
+      dates.push(currentDate);
+      currentDate = addDays(currentDate, 7);
     }
   }
+
+  return dates;
+}
+
+function getNextWeekdayFunction(weekday: Weekday) {
+  switch (weekday) {
+    case "Sunday":
+      return nextSunday;
+    case "Monday":
+      return nextMonday;
+    case "Tuesday":
+      return nextTuesday;
+    case "Wednesday":
+      return nextWednesday;
+    case "Thursday":
+      return nextThursday;
+    case "Friday":
+      return nextFriday;
+    case "Saturday":
+      return nextSaturday;
+  }
+}
+function calculateStartingDate(dateRange: DateRange, weekday: Weekday) {
+  let nextFunc = getNextWeekdayFunction(weekday) ?? (date => date);
+  return nextFunc(dateRange.from);
+}
+export function EventPanel() {
   const [dateRange, setDateRange] = useState<DateRange>({
     from: new Date(),
-    to: addDays(new Date(), 30),
+    to: addDays(new Date(), 7),
   });
+  function handleUpdatingDateRange(range) {
+    if (range) {
+      setDateRange(range);
+    } else {
+      const newDateRange = {
+        from: new Date(),
+        to: addDays(new Date(), 7),
+      }
+      setDateRange(newDateRange);
+    }
+  }
 
 
   const [timeRange, setTimeRange] = useState({
@@ -318,40 +134,51 @@ export function EventPanel() {
     setTimeRange(newTimeRange);
   }
 
-  console.log(typeof nextThursday)
   const [weekday, setWeekday] = useState<Weekday>("Sunday");
   const [location, setLocation] = useState(null);
   const [isEditingLocation, setIsEditingLocation] = useState(false);
-  function getNextWeekdayFunction(weekday: Weekday) {
-    switch (weekday) {
-      case "Sunday":
-        return nextSunday;
-      case "Monday":
-        return nextMonday;
-      case "Tuesday":
-        return nextTuesday;
-      case "Wednesday":
-        return nextWednesday;
-      case "Thursday":
-        return nextThursday;
-      case "Friday":
-        return nextFriday;
-      case "Saturday":
-        return nextSaturday;
-    }
-  }
-  function calculateStartingDate() {
-    let nextFunc = getNextWeekdayFunction(weekday) ?? (date => date);
 
-    return nextFunc(dateRange.from ?? new Date());
-  }
+  let [weatherData, setWeatherData] = useState({ days: [] });
+  let [weatherDataError, setWeatherDataError] = useState(null);
+  let arrayOfDates = calculateArrayOfDates(dateRange, weekday);
+
+  useEffect(() => {
+    if (location && dateRange) {
+      client.GET("/VisualCrossingWebServices/rest/services/timeline/{location}/{startdate}/{enddate}",
+        {
+          params: {
+            query: {
+              key: import.meta.env.VITE_WEATHER_API_KEY,
+              contentType: "json",
+              include: "hours, days"
+            },
+            path: {
+              location: location,
+              startdate: String(getUnixTime(arrayOfDates[0])),
+              enddate: String(getUnixTime(arrayOfDates[arrayOfDates.length - 1])),
+            }
+          }
+        }).then(({ data, error, response }) => {
+          if (error) {
+            setWeatherData({ days: [] });
+            setWeatherDataError(error);
+          } else {
+            setWeatherDataError(null);
+            setWeatherData(data);
+          }
+        });
+
+    }
+
+  }, [location, dateRange]);
+
 
   return (
     <div>
       <div className="grid gap-4 flex-nowrap auto-rows-auto justify-evenly grid-flow-row-dense">
         <div className="flex flex-wrap gap-2">
           <LocationEditor location={location} setLocation={setLocation} isEditingLocation={isEditingLocation} setIsEditingLocation={setIsEditingLocation} />
-          <DatePickerWithRange dateRange={dateRange} setDateRange={setDateRange} className="" />
+          <DatePickerWithRange dateRange={dateRange} setDateRange={handleUpdatingDateRange} className="" />
         </div>
 
         <div className="flex gap-2 flex-wrap">
@@ -395,23 +222,26 @@ export function EventPanel() {
       <Separator className="m-4" />
 
       <div className="grid justify-center">
-        <Carousel className="w-full">
-          <CarouselContent>
+        <Carousel className="w-xl h-fill">
+          <CarouselContent >
             {
-              weatherData["days"].map((dayData, i) => {
-                return (
-                  <CarouselItem key={i}>
-                    <WeatherPanel key={i} dayData={dayData} className="" />
-                  </CarouselItem>
-                )
-              })
+              weatherDataError ? (
+                <p> Something went wrong: {weatherDataError}</p>
+              ) :
+                weatherData["days"].map((dayData, i) => {
+                  return (
+                    <CarouselItem key={i} className="basis-1/2">
+                      <WeatherPanel key={i} dayData={dayData} className="" />
+                    </CarouselItem>
+                  )
+                })
             }
           </CarouselContent>
           <CarouselPrevious />
           <CarouselNext />
         </Carousel>
       </div>
-    </div >
+    </div>
   )
 }
 
