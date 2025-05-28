@@ -29,7 +29,7 @@ export function LocationEditor({ location, setLocation, className }: LocationEdi
   }, [debouncedSetLocation]);
 
   return (
-    <div className={cn("flex flex-nowrap flex-shrink w-fit", className)}>
+    <div className={cn("flex flex-nowrap flex-shrink w-fit items-center", className)}>
       <span className="material-symbols-outlined">location_on</span>
       <Input 
         placeholder="Location" 

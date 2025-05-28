@@ -180,14 +180,13 @@ export function EventPanel() {
         <div className="rounded-lg bg-white/50 p-4 sm:p-6 shadow-sm backdrop-blur-sm dark:bg-slate-800/50 w-full">
           <div className="space-y-4">
             <div className="grid grid-cols-1 lg:grid-cols-2 items-center gap-4">
-              <div className="w-full max-w-[300px] mx-auto lg:mx-0">
+              <div className="w-full max-w-[300px] justify-self-center lg:justify-self-end">
                 <Tooltip>
                   <TooltipTrigger asChild>
                     <div>
                       <LocationEditor 
                         location={location} 
                         setLocation={setLocation} 
-                        className="justify-self-end"
                       />
                     </div>
                   </TooltipTrigger>
@@ -196,7 +195,7 @@ export function EventPanel() {
                   </TooltipContent>
                 </Tooltip>
               </div>
-              <div className="w-full max-w-[300px] mx-auto lg:mx-0">
+              <div className="w-full max-w-[300px] justify-self-center lg:justify-self-start">
                 <Tooltip>
                   <TooltipTrigger asChild>
                     <div>
