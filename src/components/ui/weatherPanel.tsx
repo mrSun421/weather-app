@@ -3,7 +3,7 @@ import { CategoryScale, Chart, Legend, LinearScale, LineElement, PointElement, T
 import { isAfter, isBefore, format, getUnixTime } from 'date-fns';
 import { Line } from 'react-chartjs-2';
 import { useEffect, useState } from 'react';
-import { weatherClient, type WeatherDayData, type WeatherResponse } from '@/lib/visual-crossing-client';
+import { weatherClient, type WeatherDayData, type WeatherResponse } from '@/lib/visual-crossing-client.ts';
 
 interface WeatherStatProps {
   icon: string;
@@ -38,7 +38,6 @@ const WeatherIcons = {
   "clear-night": "clear_night",
 } as const;
 
-type WeatherIcon = keyof typeof WeatherIcons;
 
 interface WeatherPanelProps {
   date: Date;
