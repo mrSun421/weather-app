@@ -6,7 +6,6 @@ export function LocationEditor({ location, setLocation, isEditingLocation, setIs
 
   function handleEnter(e) {
     if (e.keyCode === 13) {
-      console.log(e);
       setIsEditingLocation(false);
     }
   }

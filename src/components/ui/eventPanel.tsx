@@ -150,7 +150,7 @@ export function EventPanel() {
             query: {
               key: import.meta.env.VITE_WEATHER_API_KEY,
               contentType: "json",
-              include: "hours, days"
+              include: "hours,days,fcst,statsfcst",
             },
             path: {
               location: location,
@@ -229,10 +229,10 @@ export function EventPanel() {
                 <p> Something went wrong: {weatherDataError}</p>
               ) :
                 weatherData["days"].map((dayData, i) => {
-                  return (
-                    <CarouselItem key={i} className="basis-1/2">
-                      <WeatherPanel key={i} dayData={dayData} className="" />
-                    </CarouselItem>
+                  return ((i % 7 === 0) ?
+                    (<CarouselItem key={i} className="basis-1/2">
+                      <WeatherPanel key={i} dayData={dayData} timeRange={timeRange} className="" />
+                    </CarouselItem>) : (<></>)
                   )
                 })
             }
