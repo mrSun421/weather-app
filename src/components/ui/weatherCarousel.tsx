@@ -1,6 +1,7 @@
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "@/components/ui/carousel";
 import { LazyWeatherPanel } from "./lazyWeatherPanel";
 import { Button } from "./button";
+import { type UnitGroup } from '@/lib/visual-crossing-client';
 
 interface WeatherCarouselProps {
   dates: Date[];
@@ -10,9 +11,10 @@ interface WeatherCarouselProps {
     to: number;
   };
   onExtend: () => void;
+  unitGroup?: UnitGroup;
 }
 
-export function WeatherCarousel({ dates, location, timeRange, onExtend }: WeatherCarouselProps) {
+export function WeatherCarousel({ dates, location, timeRange, onExtend, unitGroup = 'us' }: WeatherCarouselProps) {
   return (
     <Carousel 
       className="w-full max-w-4xl" 
@@ -32,6 +34,7 @@ export function WeatherCarousel({ dates, location, timeRange, onExtend }: Weathe
               location={location}
               timeRange={timeRange}
               className="h-full"
+              unitGroup={unitGroup}
             />
           </CarouselItem>
         ))}

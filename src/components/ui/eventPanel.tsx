@@ -17,6 +17,7 @@ import { TimeDrawer } from "@/components/ui/timeDrawer";
 import { type TimeRange, type TimePreset } from "@/types/time";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { parseJSONCookie, setJSONCookie } from "@/lib/cookies";
+import { useUnit } from "@/lib/unitContext";
 
 type Weekday = 'Sunday' | 'Monday' | 'Tuesday' | 'Wednesday' | 'Thursday' | 'Friday' | 'Saturday';
 
@@ -154,6 +155,7 @@ export function EventPanel() {
   const [location, setLocation] = useState<string>(() => 
     parseJSONCookie<string>('location', "")
   );
+  const { unitGroup } = useUnit();
 
   // Save preferences to cookies when they change
   useEffect(() => {
@@ -256,6 +258,7 @@ export function EventPanel() {
                 dates={dates}
                 location={location}
                 timeRange={timeRange}
+                unitGroup={unitGroup}
                 onExtend={() => {
                   if (dateRange?.to) {
                     setDateRange({

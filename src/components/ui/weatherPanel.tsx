@@ -3,7 +3,8 @@ import { CategoryScale, Chart, Legend, LinearScale, LineElement, PointElement, T
 import { isAfter, isBefore, format, getUnixTime } from 'date-fns';
 import { Line } from 'react-chartjs-2';
 import { useEffect, useState } from 'react';
-import { weatherClient, type WeatherDayData, type WeatherResponse } from '@/lib/visual-crossing-client.ts';
+import { type WeatherDayData, type WeatherResponse, type UnitGroup, fetchWeatherData } from '@/lib/visual-crossing-client';
+import { useFont } from "@/lib/fontContext";
 
 interface WeatherStatProps {
   icon: string;
@@ -38,7 +39,6 @@ const WeatherIcons = {
   "clear-night": "clear_night",
 } as const;
 
-
 interface WeatherPanelProps {
   date: Date;
   location: string;
@@ -47,21 +47,31 @@ interface WeatherPanelProps {
     to: number;
   };
   className?: string;
+  unitGroup?: UnitGroup;
 }
 
-function getWeatherComment(temp: number, precipprob: number, risk: number) {
+function getWeatherComment(temp: number, precipprob: number, risk: number, unitGroup: UnitGroup) {
   const comments = [];
   let shouldCancel = false;
 
-  // Temperature assessment
-  if (temp < 32.0) {
+  // Temperature assessment - convert thresholds based on unit group
+  const tempThresholds = {
+    us: { freezing: 32, chilly: 65, perfect: 80, hot: 93 },
+    uk: { freezing: 0, chilly: 18, perfect: 27, hot: 34 },
+    metric: { freezing: 0, chilly: 18, perfect: 27, hot: 34 },
+    base: { freezing: 273.15, chilly: 291.15, perfect: 300.15, hot: 307.15 }
+  };
+
+  const thresholds = tempThresholds[unitGroup];
+
+  if (temp < thresholds.freezing) {
     comments.push("Below freezing!");
     shouldCancel = true;
-  } else if (temp < 65.0) {
+  } else if (temp < thresholds.chilly) {
     comments.push("A bit chilly! I recommend a jacket.");
-  } else if (temp < 80.0) {
+  } else if (temp < thresholds.perfect) {
     comments.push("Perfect temperature!");
-  } else if (temp < 93.0) {
+  } else if (temp < thresholds.hot) {
     comments.push("A bit hot! I recommend shorts.");
   } else {
     comments.push("Too hot!");
@@ -90,47 +100,23 @@ function getWeatherComment(temp: number, precipprob: number, risk: number) {
   return { comment: comments.join(" "), shouldCancel };
 }
 
-export function WeatherPanel({ date, location, timeRange, className }: WeatherPanelProps) {
+export function WeatherPanel({ date, location, timeRange, className, unitGroup = 'us' }: WeatherPanelProps) {
   const [dayData, setDayData] = useState<WeatherDayData | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
+  const { useShantellSans } = useFont();
 
   const fetchData = async () => {
     setIsLoading(true);
     try {
-      const {data, error, response}= await weatherClient.GET("/VisualCrossingWebServices/rest/services/timeline/{location}/{startdate}", {
-        params: {
-          query: {
-            key: import.meta.env.VITE_WEATHER_API_KEY,
-            contentType: "json",
-            include: "hours,days,fcst,statsfcst",
-            iconSet: "icons1",
-          },
-          path: {
-            location: location,
-            startdate: String(getUnixTime(date)),
-          }
-        }
+      const weatherData = await fetchWeatherData({
+        location,
+        date,
+        unitGroup,
       });
 
-      if (!data) {
-        setError("No response from weather service");
-        setDayData(null);
-        return;
-      }
-
-      const weatherData = data as unknown as WeatherResponse;
-
-      if (error) {
-        setError(error);
-        setDayData(null);
-      } else if (weatherData.days?.[0]) {
-        setDayData(weatherData.days[0]);
-        setError(null);
-      } else {
-        setError("No weather data available");
-        setDayData(null);
-      }
+      setDayData(weatherData.days[0]);
+      setError(null);
     } catch (err) {
       setError(err instanceof Error ? err.message : "Failed to fetch weather data");
       setDayData(null);
@@ -143,7 +129,22 @@ export function WeatherPanel({ date, location, timeRange, className }: WeatherPa
     if (location) {
       fetchData();
     }
-  }, [date, location]);
+  }, [date, location, unitGroup]);
+
+  const getUnitSymbol = (type: 'temp' | 'wind' | 'distance' | 'precip') => {
+    switch (type) {
+      case 'temp':
+        return unitGroup === 'us' ? '°F' : unitGroup === 'base' ? 'K' : '°C';
+      case 'wind':
+        return unitGroup === 'base' ? ' m/s' : unitGroup === 'metric' ? ' km/h' : ' mph';
+      case 'distance':
+        return unitGroup === 'us' || unitGroup === 'uk' ? ' mi' : ' km';
+      case 'precip':
+        return unitGroup === 'us' ? ' in' : ' mm';
+      default:
+        return '';
+    }
+  };
 
   if (error) {
     return (
@@ -207,7 +208,7 @@ export function WeatherPanel({ date, location, timeRange, className }: WeatherPa
   });
 
   Chart.register(CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend);
-  Chart.defaults.font.family = "Shantell Sans";
+  Chart.defaults.font.family = useShantellSans ? "Shantell Sans" : "Arial";
 
   const chartData = {
     labels: hourBasedData.map((hour) => format(new Date(hour.datetimeEpoch * 1000), "p")),
@@ -236,7 +237,10 @@ export function WeatherPanel({ date, location, timeRange, className }: WeatherPa
       legend: {
         position: 'top' as const,
         labels: {
-          font: { family: "Shantell Sans", size: 12 },
+          font: { 
+            family: useShantellSans ? "Shantell Sans" : "Arial", 
+            size: 12 
+          },
           color: '#54577c'
         }
       },
@@ -246,21 +250,27 @@ export function WeatherPanel({ date, location, timeRange, className }: WeatherPa
         beginAtZero: false,
         grid: { color: 'rgba(154, 168, 153, 0.1)' },
         ticks: {
-          font: { family: "Shantell Sans", size: 12 },
+          font: { 
+            family: useShantellSans ? "Shantell Sans" : "Arial", 
+            size: 12 
+          },
           color: '#54577c'
         }
       },
       x: {
         grid: { display: false },
         ticks: {
-          font: { family: "Shantell Sans", size: 12 },
+          font: { 
+            family: useShantellSans ? "Shantell Sans" : "Arial", 
+            size: 12 
+          },
           color: '#54577c'
         }
       },
     },
   };
 
-  const { comment, shouldCancel } = getWeatherComment(dayData.temp, dayData.precipprob, dayData.severerisk);
+  const { comment, shouldCancel } = getWeatherComment(dayData.temp, dayData.precipprob, dayData.severerisk, unitGroup);
 
   return (
     <div className={cn("p-6 transition-all duration-200", className)}>
@@ -273,7 +283,9 @@ export function WeatherPanel({ date, location, timeRange, className }: WeatherPa
             <span className="material-symbols-outlined text-3xl">
               {WeatherIcons[dayData.icon]}
             </span>
-            <span className="text-2xl font-medium">{dayData.temp}°F</span>
+            <span className="text-2xl font-medium">
+              {dayData.temp}{getUnitSymbol('temp')}
+            </span>
           </div>
         </div>
 
@@ -282,13 +294,13 @@ export function WeatherPanel({ date, location, timeRange, className }: WeatherPa
             icon="thermostat"
             label="Feels Like"
             value={hourBasedData[0]?.feelslike ?? dayData.temp}
-            unit="°F"
+            unit={getUnitSymbol('temp')}
           />
           <WeatherStat 
             icon="air"
             label="Wind"
             value={dayData.windspeed}
-            unit=" mph"
+            unit={getUnitSymbol('wind')}
           />
           <WeatherStat 
             icon="water_drop"

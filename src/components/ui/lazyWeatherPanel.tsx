@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import { WeatherPanel } from '@/components/ui/weatherPanel';
+import { type UnitGroup } from '@/lib/visual-crossing-client';
 
 interface LazyWeatherPanelProps {
   date: Date;
@@ -9,6 +10,7 @@ interface LazyWeatherPanelProps {
     to: number;
   };
   className?: string;
+  unitGroup?: UnitGroup;
 }
 
 export function LazyWeatherPanel(props: LazyWeatherPanelProps) {
