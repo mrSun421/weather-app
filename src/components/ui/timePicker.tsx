@@ -1,6 +1,4 @@
 import { format } from "date-fns"
-import { Button } from "./button"
-import { Popover, PopoverTrigger, PopoverContent } from "./popover"
 import { cn } from '@/lib/utils'
 import {
   Select,
@@ -12,11 +10,24 @@ import {
   SelectLabel,
 } from "@/components/ui/select"
 
+type TimePreset = 'day' | 'morning' | 'afternoon' | 'evening' | 'custom';
 
-export function TimePickerWithRange({ className, timeRange, setTimeRange }) {
+interface TimeRange {
+  preset: TimePreset;
+  from: number;
+  to: number;
+}
 
-  function handleStartingTimeUpdate(value) {
-    let newTimeRange = {
+interface TimePickerWithRangeProps {
+  className?: string;
+  timeRange: TimeRange;
+  setTimeRange: (timeRange: TimeRange) => void;
+}
+
+export function TimePickerWithRange({ className, timeRange, setTimeRange }: TimePickerWithRangeProps) {
+
+  function handleStartingTimeUpdate(value: string) {
+    let newTimeRange: TimeRange = {
       preset: "custom",
       from: timeRange.from,
       to: timeRange.to,
@@ -28,8 +39,8 @@ export function TimePickerWithRange({ className, timeRange, setTimeRange }) {
     }
     setTimeRange(newTimeRange);
   }
-  function handleEndingTimeUpdate(value) {
-    let newTimeRange = {
+  function handleEndingTimeUpdate(value: string) {
+    let newTimeRange: TimeRange = {
       preset: "custom",
       from: timeRange.from,
       to: timeRange.to,
@@ -42,10 +53,8 @@ export function TimePickerWithRange({ className, timeRange, setTimeRange }) {
     setTimeRange(newTimeRange);
   }
 
-  const disabled = timeRange.preset !== "custom";
-
   return (<div className={cn("flex gap-2", className)}>
-    <Select value={`${timeRange.from}`} onValueChange={handleStartingTimeUpdate} disabled={disabled} >
+    <Select value={`${timeRange.from}`} onValueChange={handleStartingTimeUpdate}>
       <SelectTrigger className="w-fit">
         <SelectValue />
       </SelectTrigger>
@@ -55,14 +64,11 @@ export function TimePickerWithRange({ className, timeRange, setTimeRange }) {
           {[...Array(24).keys()].map((i) => {
             return (<SelectItem key={i} value={`${i}`}>{format(new Date(1970, 0, 0, i), "p")}</SelectItem>)
           })}
-
         </SelectGroup>
       </SelectContent>
-
-
     </Select>
-    <p className={`text-nowrap text-sm py-2 ${disabled ? 'opacity-50' : ''}`}> to </p>
-    <Select value={`${timeRange.to}`} onValueChange={handleEndingTimeUpdate} disabled={disabled} >
+    <p className="text-nowrap text-sm py-2"> to </p>
+    <Select value={`${timeRange.to}`} onValueChange={handleEndingTimeUpdate}>
       <SelectTrigger className="w-fit">
         <SelectValue />
       </SelectTrigger>
@@ -72,10 +78,8 @@ export function TimePickerWithRange({ className, timeRange, setTimeRange }) {
           {[...Array(24).keys()].map((i) => {
             return (<SelectItem key={i} value={`${i + 1}`}>{format(new Date(1970, 0, 0, i + 1), "p")}</SelectItem>)
           })}
-
         </SelectGroup>
       </SelectContent>
     </Select>
   </div>)
-
 }

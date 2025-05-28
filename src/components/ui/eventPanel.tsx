@@ -1,6 +1,6 @@
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { WeatherCarousel } from "@/components/ui/weatherCarousel";
-import { addDays, nextMonday, nextSunday, nextWednesday, nextFriday, nextTuesday, nextThursday, nextSaturday, format } from 'date-fns';
+import { addDays, nextMonday, nextSunday, nextWednesday, nextFriday, nextTuesday, nextThursday, nextSaturday } from 'date-fns';
 import { DatePickerWithRange } from "@/components/ui/datePickerWithRange";
 import { type DateRange } from "react-day-picker";
 import {
@@ -13,26 +13,12 @@ import {
   SelectLabel,
 } from "@/components/ui/select"
 import { LocationEditor } from "@/components/ui/locationEditor";
-import { TimePickerWithRange } from "@/components/ui/timePicker";
-import { 
-  Drawer,
-  DrawerContent,
-  DrawerDescription,
-  DrawerHeader,
-  DrawerTitle,
-  DrawerTrigger,
-} from "@/components/ui/drawer"
-import { Button } from "@/components/ui/button"
+import { TimeDrawer } from "@/components/ui/timeDrawer";
+import { type TimeRange, type TimePreset } from "@/types/time";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
+import { parseJSONCookie, setJSONCookie } from "@/lib/cookies";
 
 type Weekday = 'Sunday' | 'Monday' | 'Tuesday' | 'Wednesday' | 'Thursday' | 'Friday' | 'Saturday';
-type TimePreset = 'day' | 'morning' | 'afternoon' | 'evening' | 'custom';
-
-interface TimeRange {
-  preset: TimePreset;
-  from: number;
-  to: number;
-}
 
 const TIME_PRESETS: Record<TimePreset, { from: number; to: number }> = {
   day: { from: 0, to: 24 },
@@ -43,18 +29,26 @@ const TIME_PRESETS: Record<TimePreset, { from: number; to: number }> = {
 };
 
 function useTimeRange(initialPreset: TimePreset = 'day') {
-  const [timeRange, setTimeRange] = useState<TimeRange>({
-    preset: initialPreset,
-    ...TIME_PRESETS[initialPreset]
+  const [timeRange, setTimeRange] = useState<TimeRange>(() => {
+    return parseJSONCookie<TimeRange>('timeRange', {
+      preset: initialPreset,
+      ...TIME_PRESETS[initialPreset]
+    });
   });
 
   const handlePresetUpdate = (preset: TimePreset) => {
-    setTimeRange({
+    const newTimeRange = {
       preset,
       ...TIME_PRESETS[preset],
       ...(preset === 'custom' ? { from: timeRange.from, to: timeRange.to } : {})
-    });
+    };
+    setTimeRange(newTimeRange);
+    setJSONCookie('timeRange', newTimeRange);
   };
+
+  useEffect(() => {
+    setJSONCookie('timeRange', timeRange);
+  }, [timeRange]);
 
   return { timeRange, setTimeRange, handlePresetUpdate };
 }
@@ -114,44 +108,7 @@ function WeekdaySelector({
   );
 }
 
-function CustomTimeDrawer({
-  timeRange,
-  setTimeRange,
-}: {
-  timeRange: TimeRange;
-  setTimeRange: (range: TimeRange) => void;
-}) {
-  return (
-    <Drawer>
-      <DrawerTrigger asChild>
-        <Button 
-          variant="outline" 
-          className="w-full sm:w-auto"
-          disabled={timeRange.preset !== 'custom'}
-        >
-          {format(new Date().setHours(timeRange.from, 0), 'p')} - {format(new Date().setHours(timeRange.to, 0), 'p')}
-        </Button>
-      </DrawerTrigger>
-      <DrawerContent>
-        <div className="flex flex-col items-center justify-center min-h-[40vh] py-6 px-4">
-          <DrawerHeader className="text-center pb-2">
-            <DrawerTitle className="text-3xl font-bold mb-1">Select Time Range</DrawerTitle>
-            <DrawerDescription className="text-lg">
-              Choose your preferred time range for the event
-            </DrawerDescription>
-          </DrawerHeader>
-          <div className="flex items-center justify-center w-full">
-            <TimePickerWithRange 
-              timeRange={timeRange} 
-              setTimeRange={setTimeRange} 
-              className="scale-110" 
-            />
-          </div>
-        </div>
-      </DrawerContent>
-    </Drawer>
-  );
-}
+
 
 function PresetTimeSelector({
   timeRange,
@@ -183,24 +140,37 @@ function PresetTimeSelector({
 }
 
 export function EventPanel() {
-  const [dateRange, setDateRange] = useState<DateRange>({
-    from: new Date(),
-    to: addDays(new Date(), 7),
-  });
-
-  const { timeRange, setTimeRange, handlePresetUpdate } = useTimeRange();
-  const [weekday, setWeekday] = useState<Weekday>("Sunday");
-  const [location, setLocation] = useState<string>("");
-  const [isEditingLocation, setIsEditingLocation] = useState(false);
-
-  const handleDateRangeUpdate = (range: DateRange | undefined) => {
-    setDateRange(range ?? {
+  const [dateRange, setDateRange] = useState<DateRange | undefined>(() => {
+    return parseJSONCookie<DateRange | undefined>('dateRange', {
       from: new Date(),
       to: addDays(new Date(), 7),
     });
-  };
+  });
 
-  const dates = dateRange.from ? calculateArrayOfDates(dateRange, weekday) : [];
+  const { timeRange, setTimeRange, handlePresetUpdate } = useTimeRange();
+  const [weekday, setWeekday] = useState<Weekday>(() => 
+    parseJSONCookie<Weekday>('weekday', "Sunday")
+  );
+  const [location, setLocation] = useState<string>(() => 
+    parseJSONCookie<string>('location', "")
+  );
+
+  // Save preferences to cookies when they change
+  useEffect(() => {
+    if (dateRange) {
+      setJSONCookie('dateRange', dateRange);
+    }
+  }, [dateRange]);
+
+  useEffect(() => {
+    setJSONCookie('weekday', weekday);
+  }, [weekday]);
+
+  useEffect(() => {
+    setJSONCookie('location', location);
+  }, [location]);
+
+  const dates = dateRange ? (dateRange.from ? calculateArrayOfDates(dateRange, weekday) : []) : [];
 
   return (
     <div className="animate-in container mx-auto max-w-4xl px-4">
@@ -215,8 +185,6 @@ export function EventPanel() {
                       <LocationEditor 
                         location={location} 
                         setLocation={setLocation} 
-                        isEditingLocation={isEditingLocation} 
-                        setIsEditingLocation={setIsEditingLocation} 
                         className="justify-self-end"
                       />
                     </div>
@@ -232,7 +200,7 @@ export function EventPanel() {
                     <div>
                       <DatePickerWithRange 
                         dateRange={dateRange} 
-                        setDateRange={handleDateRangeUpdate} 
+                        setDateRange={setDateRange} 
                         className="w-full" 
                       />
                     </div>
@@ -268,7 +236,7 @@ export function EventPanel() {
                   <p>Select a time range preset or customize your own</p>
                 </TooltipContent>
               </Tooltip>
-      <CustomTimeDrawer timeRange={timeRange} setTimeRange={setTimeRange} />
+              <TimeDrawer timeRange={timeRange} setTimeRange={setTimeRange} />
             </div>
           </div>
         </div>
@@ -289,9 +257,9 @@ export function EventPanel() {
                 location={location}
                 timeRange={timeRange}
                 onExtend={() => {
-                  if (dateRange.to) {
+                  if (dateRange?.to) {
                     setDateRange({
-                      ...dateRange,
+                      from: dateRange.from,
                       to: addDays(dateRange.to, 7)
                     });
                   }
