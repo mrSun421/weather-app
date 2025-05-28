@@ -5,25 +5,35 @@ import { Line } from 'react-chartjs-2';
 import { useEffect, useState } from 'react';
 import { type WeatherDayData, type WeatherResponse, type UnitGroup, fetchWeatherData } from '@/lib/visual-crossing-client';
 import { useFont } from "@/lib/fontContext";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 
 interface WeatherStatProps {
   icon: string;
   label: string;
   value: string | number;
   unit?: string;
+  onClick?: () => void;
 }
 
-function WeatherStat({ icon, label, value, unit = '' }: WeatherStatProps) {
+function WeatherStat({ icon, label, value, unit = '', onClick }: WeatherStatProps) {
+  const Wrapper = onClick ? 'button' : 'div';
+  const wrapperClassName = cn(
+    "flex items-center gap-2 rounded-lg bg-mindaro/50 p-3 dark:bg-ultra_violet-300/50 w-full text-left",
+    onClick && "hover:opacity-80 transition-opacity cursor-pointer"
+  );
+
   return (
-    <div className="flex items-center gap-2 rounded-lg bg-mindaro/50 p-3 dark:bg-ultra_violet-300/50">
+    <Wrapper onClick={onClick} className={wrapperClassName}>
       <span className="material-symbols-outlined text-steel_blue dark:text-mindaro">
         {icon}
       </span>
       <div>
         <p className="text-sm text-ash_gray dark:text-mindaro/70">{label}</p>
-        <p className="font-medium text-ultra_violet dark:text-cream">{value}{unit}</p>
+        <p className="font-medium text-ultra_violet dark:text-cream">
+          {value}{unit}
+        </p>
       </div>
-    </div>
+    </Wrapper>
   );
 }
 
@@ -104,6 +114,10 @@ export function WeatherPanel({ date, location, timeRange, className, unitGroup =
   const [dayData, setDayData] = useState<WeatherDayData | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
+  const [showTempDialog, setShowTempDialog] = useState(false);
+  const [showFeelsLikeDialog, setShowFeelsLikeDialog] = useState(false);
+  const [showWindDialog, setShowWindDialog] = useState(false);
+  const [showRainDialog, setShowRainDialog] = useState(false);
   const { useShantellSans } = useFont();
 
   const fetchData = async () => {
@@ -272,6 +286,159 @@ export function WeatherPanel({ date, location, timeRange, className, unitGroup =
 
   const { comment, shouldCancel } = getWeatherComment(dayData.temp, dayData.precipprob, dayData.severerisk, unitGroup);
 
+  const temperatureChartData = {
+    labels: hourBasedData.map((hour) => format(new Date(hour.datetimeEpoch * 1000), "p")),
+    datasets: [
+      {
+        label: 'Temperature',
+        data: hourBasedData.map(hour => hour.temp),
+        borderColor: '#4a7b9d',
+        backgroundColor: 'rgba(74, 123, 157, 0.5)',
+        tension: 0.4,
+      }
+    ]
+  };
+
+  const temperatureChartOptions = {
+    ...chartOptions,
+    plugins: {
+      ...chartOptions.plugins,
+      title: {
+        display: true,
+        text: 'Temperature Over Time',
+        font: {
+          size: 16,
+          family: useShantellSans ? "Shantell Sans" : "Arial"
+        },
+        color: '#54577c'
+      }
+    }
+  };
+
+  const feelsLikeChartData = {
+    labels: hourBasedData.map((hour) => format(new Date(hour.datetimeEpoch * 1000), "p")),
+    datasets: [
+      {
+        label: 'Feels Like',
+        data: hourBasedData.map(hour => hour.feelslike),
+        borderColor: '#e63946',
+        backgroundColor: 'rgba(230, 57, 70, 0.5)',
+        tension: 0.4,
+      }
+    ]
+  };
+
+  const feelsLikeChartOptions = {
+    ...chartOptions,
+    plugins: {
+      ...chartOptions.plugins,
+      title: {
+        display: true,
+        text: 'Feels Like Temperature Over Time',
+        font: {
+          size: 16,
+          family: useShantellSans ? "Shantell Sans" : "Arial"
+        },
+        color: '#54577c'
+      }
+    }
+  };
+
+  const windChartData = {
+    labels: hourBasedData.map((hour) => format(new Date(hour.datetimeEpoch * 1000), "p")),
+    datasets: [
+      {
+        label: 'Wind Speed',
+        data: hourBasedData.map(hour => hour.windspeed),
+        borderColor: '#54577c',
+        backgroundColor: 'rgba(84, 87, 124, 0.5)',
+        tension: 0.4,
+      },
+      {
+        label: 'Wind Gust',
+        data: hourBasedData.map(hour => hour.windgust),
+        borderColor: '#9aa899',
+        backgroundColor: 'rgba(154, 168, 153, 0.5)',
+        tension: 0.4,
+        borderDash: [5, 5],
+      }
+    ]
+  };
+
+  const windChartOptions = {
+    ...chartOptions,
+    plugins: {
+      ...chartOptions.plugins,
+      title: {
+        display: true,
+        text: 'Wind Speed Over Time',
+        font: {
+          size: 16,
+          family: useShantellSans ? "Shantell Sans" : "Arial"
+        },
+        color: '#54577c'
+      },
+      tooltip: {
+        callbacks: {
+          label: function(context: any) {
+            return `${context.dataset.label}: ${context.raw}${getUnitSymbol('wind')}`;
+          }
+        }
+      }
+    }
+  };
+
+  const rainChartData = {
+    labels: hourBasedData.map((hour) => format(new Date(hour.datetimeEpoch * 1000), "p")),
+    datasets: [
+      {
+        label: 'Precipitation Chance',
+        data: hourBasedData.map(hour => hour.precipprob),
+        borderColor: '#4361ee',
+        backgroundColor: 'rgba(67, 97, 238, 0.5)',
+        tension: 0.4,
+        fill: true,
+      }
+    ]
+  };
+
+  const rainChartOptions = {
+    ...chartOptions,
+    plugins: {
+      ...chartOptions.plugins,
+      title: {
+        display: true,
+        text: 'Precipitation Probability Over Time',
+        font: {
+          size: 16,
+          family: useShantellSans ? "Shantell Sans" : "Arial"
+        },
+        color: '#54577c'
+      },
+      tooltip: {
+        callbacks: {
+          label: function(context: any) {
+            return `${context.dataset.label}: ${context.raw}%`;
+          }
+        }
+      }
+    },
+    scales: {
+      ...chartOptions.scales,
+      y: {
+        ...chartOptions.scales.y,
+        min: 0,
+        max: 100,
+        ticks: {
+          ...chartOptions.scales.y.ticks,
+          callback: function(this: any, value: number | string) {
+            return value + '%';
+          }
+        }
+      }
+    }
+  };
+
   return (
     <div className={cn("p-6 transition-all duration-200", className)}>
       <div className="space-y-6">
@@ -279,14 +446,17 @@ export function WeatherPanel({ date, location, timeRange, className, unitGroup =
           <h2 className="text-2xl font-semibold text-ultra_violet dark:text-cream">
             {format(date, "EEEE, MMMM d")}
           </h2>
-          <div className="flex items-center gap-2 text-steel_blue dark:text-mindaro">
+          <button
+            onClick={() => setShowTempDialog(true)}
+            className="flex items-center gap-2 text-steel_blue dark:text-mindaro hover:opacity-80 transition-opacity"
+          >
             <span className="material-symbols-outlined text-3xl">
               {WeatherIcons[dayData.icon]}
             </span>
             <span className="text-2xl font-medium">
               {dayData.temp}{getUnitSymbol('temp')}
             </span>
-          </div>
+          </button>
         </div>
 
         <div className="grid grid-cols-3 gap-4">
@@ -295,18 +465,21 @@ export function WeatherPanel({ date, location, timeRange, className, unitGroup =
             label="Feels Like"
             value={hourBasedData[0]?.feelslike ?? dayData.temp}
             unit={getUnitSymbol('temp')}
+            onClick={() => setShowFeelsLikeDialog(true)}
           />
           <WeatherStat 
             icon="air"
             label="Wind"
             value={dayData.windspeed}
             unit={getUnitSymbol('wind')}
+            onClick={() => setShowWindDialog(true)}
           />
           <WeatherStat 
             icon="water_drop"
             label="Rain Chance"
             value={dayData.precipprob}
             unit="%"
+            onClick={() => setShowRainDialog(true)}
           />
         </div>
 
@@ -328,6 +501,80 @@ export function WeatherPanel({ date, location, timeRange, className, unitGroup =
             </div>
           )}
         </div>
+
+        <Dialog open={showFeelsLikeDialog} onOpenChange={setShowFeelsLikeDialog}>
+          <DialogContent className="sm:max-w-[600px]">
+            <DialogHeader>
+              <DialogTitle>Feels Like Temperature Details</DialogTitle>
+            </DialogHeader>
+            <div className="h-[400px] pt-4">
+              {hoursData.length > 0 ? (
+                <Line options={feelsLikeChartOptions} data={feelsLikeChartData} />
+              ) : (
+                <div className="flex h-full items-center justify-center text-ash_gray dark:text-mindaro/70">
+                  <p>No hourly data available</p>
+                </div>
+              )}
+            </div>
+          </DialogContent>
+        </Dialog>
+
+        <Dialog open={showTempDialog} onOpenChange={setShowTempDialog}>
+          <DialogContent className="sm:max-w-[600px]">
+            <DialogHeader>
+              <DialogTitle>Temperature Details</DialogTitle>
+            </DialogHeader>
+            <div className="h-[400px] pt-4">
+              {hoursData.length > 0 ? (
+                <Line options={temperatureChartOptions} data={temperatureChartData} />
+              ) : (
+                <div className="flex h-full items-center justify-center text-ash_gray dark:text-mindaro/70">
+                  <p>No hourly data available</p>
+                </div>
+              )}
+            </div>
+          </DialogContent>
+        </Dialog>
+
+        <Dialog open={showWindDialog} onOpenChange={setShowWindDialog}>
+          <DialogContent className="sm:max-w-[600px]">
+            <DialogHeader>
+              <DialogTitle>Wind Speed Details</DialogTitle>
+            </DialogHeader>
+            <div className="h-[400px] pt-4">
+              {hoursData.length > 0 ? (
+                <Line options={windChartOptions} data={windChartData} />
+              ) : (
+                <div className="flex h-full items-center justify-center text-ash_gray dark:text-mindaro/70">
+                  <p>No hourly data available</p>
+                </div>
+              )}
+            </div>
+            <div className="text-sm text-ash_gray dark:text-mindaro/70 pt-2">
+              <p>Dashed line indicates wind gust speed</p>
+            </div>
+          </DialogContent>
+        </Dialog>
+
+        <Dialog open={showRainDialog} onOpenChange={setShowRainDialog}>
+          <DialogContent className="sm:max-w-[600px]">
+            <DialogHeader>
+              <DialogTitle>Precipitation Probability Details</DialogTitle>
+            </DialogHeader>
+            <div className="h-[400px] pt-4">
+              {hoursData.length > 0 ? (
+                <Line options={rainChartOptions} data={rainChartData} />
+              ) : (
+                <div className="flex h-full items-center justify-center text-ash_gray dark:text-mindaro/70">
+                  <p>No hourly data available</p>
+                </div>
+              )}
+            </div>
+            <div className="text-sm text-ash_gray dark:text-mindaro/70 pt-2">
+              <p>Values show the probability of precipitation during each hour</p>
+            </div>
+          </DialogContent>
+        </Dialog>
       </div>
     </div>
   );

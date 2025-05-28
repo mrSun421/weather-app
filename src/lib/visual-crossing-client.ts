@@ -9,6 +9,9 @@ export interface WeatherDayData {
     datetimeEpoch: number;
     temp: number;
     feelslike: number;
+    windspeed: number;
+    windgust: number;
+    precipprob: number;
   }>;
   temp: number;
   precipprob: number;
