@@ -158,18 +158,19 @@ export function EventPanel() {
   return (
     <div className="animate-in container mx-auto max-w-4xl px-4">
       <div className="space-y-6">
-        <div className="rounded-lg bg-white/50 p-6 shadow-sm backdrop-blur-sm dark:bg-slate-800/50">
+        <div className="rounded-lg bg-white/50 p-4 sm:p-6 shadow-sm backdrop-blur-sm dark:bg-slate-800/50 w-full">
           <div className="space-y-4">
-            <div className="grid grid-wrap items-center justify-center gap-4 lg:grid-cols-2">
-              <div className="w-[300px] flex-shrink-0 justify-self-end">
+            <div className="grid grid-cols-1 lg:grid-cols-2 items-center gap-4">
+              <div className="w-full max-w-[300px] mx-auto lg:mx-0">
                 <LocationEditor 
                   location={location} 
                   setLocation={setLocation} 
                   isEditingLocation={isEditingLocation} 
                   setIsEditingLocation={setIsEditingLocation} 
+                  className="justify-self-end"
                 />
               </div>
-              <div className="flex-1 min-w-[300px]">
+              <div className="w-full max-w-[300px] mx-auto lg:mx-0">
                 <DatePickerWithRange 
                   dateRange={dateRange} 
                   setDateRange={handleDateRangeUpdate} 
@@ -178,9 +179,9 @@ export function EventPanel() {
               </div>
             </div>
 
-            <div className="flex flex-wrap items-center justify-center gap-4">
+            <div className="flex flex-col sm:flex-row items-center gap-4 justify-center">
               <Select value={weekday} onValueChange={(value: Weekday) => setWeekday(value)}>
-                <SelectTrigger className="min-w-[180px]">
+                <SelectTrigger className="w-full sm:w-auto sm:min-w-[180px]">
                   <svg xmlns="http://www.w3.org/2000/svg" height="20" viewBox="0 -960 960 960" width="20" className="mr-2 text-steel_blue dark:text-mindaro">
                     <path fill="currentColor" d="m612-292 56-56-148-148v-184h-80v216l172 172ZM480-80q-83 0-156-31.5T197-197q-54-54-85.5-127T80-480q0-83 31.5-156T197-763q54-54 127-85.5T480-880q83 0 156 31.5T763-763q54 54 85.5 127T880-480q0 83-31.5 156T763-197q-54 54-127 85.5T480-80Zm0-400Zm0 320q133 0 226.5-93.5T800-480q0-133-93.5-226.5T480-800q-133 0-226.5 93.5T160-480q0 133 93.5 226.5T480-160Z" />
                   </svg>
@@ -197,7 +198,7 @@ export function EventPanel() {
               </Select>
 
               <Select value={timeRange.preset} onValueChange={handlePresetUpdate}>
-                <SelectTrigger className="min-w-[150px]">
+                <SelectTrigger className="w-full sm:w-auto sm:min-w-[150px]">
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
@@ -216,7 +217,7 @@ export function EventPanel() {
                 <DrawerTrigger asChild>
                   <Button 
                     variant="outline" 
-                    className="flex-1 flex-initial"
+                    className="w-full sm:w-auto"
                     disabled={timeRange.preset !== 'custom'}
                   >
                     {format(new Date().setHours(timeRange.from, 0), 'p')} - {format(new Date().setHours(timeRange.to, 0), 'p')}
