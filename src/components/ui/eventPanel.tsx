@@ -15,13 +15,6 @@ import {
 } from "@/components/ui/select"
 import { LocationEditor } from "./locationEditor";
 import { TimePickerWithRange } from "./timePicker";
-import {
-  Carousel,
-  CarouselContent,
-  CarouselItem,
-  CarouselNext,
-  CarouselPrevious,
-} from "@/components/ui/carousel"
 import createClient from 'openapi-fetch';
 import type { paths } from '@/lib/visual-crossing-schema';
 
@@ -142,8 +135,11 @@ export function EventPanel() {
   let [weatherDataError, setWeatherDataError] = useState(null);
   let arrayOfDates = calculateArrayOfDates(dateRange, weekday);
 
+  let [loadingData, setLoadingData] = useState(true);
+
   useEffect(() => {
     if (location && dateRange) {
+      setLoadingData(true);
       client.GET("/VisualCrossingWebServices/rest/services/timeline/{location}/{startdate}/{enddate}",
         {
           params: {
@@ -151,6 +147,7 @@ export function EventPanel() {
               key: import.meta.env.VITE_WEATHER_API_KEY,
               contentType: "json",
               include: "hours,days,fcst,statsfcst",
+              iconSet: "icons1",
             },
             path: {
               location: location,
@@ -166,17 +163,18 @@ export function EventPanel() {
             setWeatherDataError(null);
             setWeatherData(data);
           }
+          setLoadingData(false);
         });
 
     }
 
-  }, [location, dateRange]);
+  }, [location, dateRange, weekday]);
 
 
   return (
     <div>
       <div className="grid gap-4 flex-nowrap auto-rows-auto justify-evenly grid-flow-row-dense">
-        <div className="flex flex-wrap gap-2">
+        <div className="flex flex-wrap gap-2 justify-around">
           <LocationEditor location={location} setLocation={setLocation} isEditingLocation={isEditingLocation} setIsEditingLocation={setIsEditingLocation} />
           <DatePickerWithRange dateRange={dateRange} setDateRange={handleUpdatingDateRange} className="" />
         </div>
@@ -221,25 +219,21 @@ export function EventPanel() {
 
       <Separator className="m-4" />
 
-      <div className="grid justify-center">
-        <Carousel className="w-xl h-fill">
-          <CarouselContent >
-            {
-              weatherDataError ? (
-                <p> Something went wrong: {weatherDataError}</p>
-              ) :
-                weatherData["days"].map((dayData, i) => {
-                  return ((i % 7 === 0) ?
-                    (<CarouselItem key={i} className="basis-1/2">
-                      <WeatherPanel key={i} dayData={dayData} timeRange={timeRange} className="" />
-                    </CarouselItem>) : (<></>)
-                  )
-                })
-            }
-          </CarouselContent>
-          <CarouselPrevious />
-          <CarouselNext />
-        </Carousel>
+      <div className="grid justify-center lg:grid-cols-2">
+        {
+          loadingData ? (
+            <p>We're Working on it...</p>
+          ) : (
+            weatherDataError ? (
+              <p>Something went wrong: {weatherDataError}</p>
+            ) :
+              weatherData["days"].filter((_, i) => i % 7 === 0).map((dayData, i) => {
+                return (
+                  <WeatherPanel key={i} dayData={dayData} timeRange={timeRange} className="w-xs md:w-xl max-h-7/10" />
+
+                )
+              }))
+        }
       </div>
     </div>
   )
