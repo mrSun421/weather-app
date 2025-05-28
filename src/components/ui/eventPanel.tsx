@@ -1,7 +1,7 @@
 import { useState } from "react"
-import { WeatherCarousel } from "./weatherCarousel";
+import { WeatherCarousel } from "@/components/ui/weatherCarousel";
 import { addDays, nextMonday, nextSunday, nextWednesday, nextFriday, nextTuesday, nextThursday, nextSaturday, format } from 'date-fns';
-import { DatePickerWithRange } from "./datePickerWithRange";
+import { DatePickerWithRange } from "@/components/ui/datePickerWithRange";
 import { type DateRange } from "react-day-picker";
 import {
   Select,
@@ -12,8 +12,8 @@ import {
   SelectGroup,
   SelectLabel,
 } from "@/components/ui/select"
-import { LocationEditor } from "./locationEditor";
-import { TimePickerWithRange } from "./timePicker";
+import { LocationEditor } from "@/components/ui/locationEditor";
+import { TimePickerWithRange } from "@/components/ui/timePicker";
 import { 
   Drawer,
   DrawerContent,
@@ -211,6 +211,14 @@ export function EventPanel() {
                 dates={dates}
                 location={location}
                 timeRange={timeRange}
+                onExtend={() => {
+                  if (dateRange.to) {
+                    setDateRange({
+                      ...dateRange,
+                      to: addDays(dateRange.to, 7)
+                    });
+                  }
+                }}
               />
             )}
           </div>

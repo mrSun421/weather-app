@@ -1,5 +1,5 @@
-import { Input } from "./input"
-import { Button } from "./button"
+import { Input } from "@/components/ui/input"
+import { Button } from "@/components/ui/button"
 import { useEffect, useRef } from "react"
 import { cn, debounce } from "@/lib/utils"
 

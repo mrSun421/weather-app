@@ -1,4 +1,4 @@
-import { EventPanel } from "./components/ui/eventPanel.tsx";
+import { EventPanel } from "@/components/ui/eventPanel";
 
 function App() {
   return (
