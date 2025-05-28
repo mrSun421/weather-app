@@ -93,49 +93,53 @@ function getWeatherComment(temp: number, precipprob: number, risk: number) {
 export function WeatherPanel({ date, location, timeRange, className }: WeatherPanelProps) {
   const [dayData, setDayData] = useState<WeatherDayData | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [isLoading, setIsLoading] = useState(false);
 
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const response = await weatherClient.GET("/VisualCrossingWebServices/rest/services/timeline/{location}/{startdate}", {
-          params: {
-            query: {
-              key: import.meta.env.VITE_WEATHER_API_KEY,
-              contentType: "json",
-              include: "hours,days,fcst,statsfcst",
-              iconSet: "icons1",
-            },
-            path: {
-              location: location,
-              startdate: String(getUnixTime(date)),
-            }
+  const fetchData = async () => {
+    setIsLoading(true);
+    try {
+      const {data, error, response}= await weatherClient.GET("/VisualCrossingWebServices/rest/services/timeline/{location}/{startdate}", {
+        params: {
+          query: {
+            key: import.meta.env.VITE_WEATHER_API_KEY,
+            contentType: "json",
+            include: "hours,days,fcst,statsfcst",
+            iconSet: "icons1",
+          },
+          path: {
+            location: location,
+            startdate: String(getUnixTime(date)),
           }
-        });
-
-        if (!response.data) {
-          setError("No response from weather service");
-          setDayData(null);
-          return;
         }
+      });
 
-        const weatherData = response.data as unknown as WeatherResponse;
+      if (!data) {
+        setError("No response from weather service");
+        setDayData(null);
+        return;
+      }
 
-        if (weatherData.error) {
-          setError(weatherData.error);
-          setDayData(null);
-        } else if (weatherData.days?.[0]) {
-          setDayData(weatherData.days[0]);
-          setError(null);
-        } else {
-          setError("No weather data available");
-          setDayData(null);
-        }
-      } catch (err) {
-        setError(err instanceof Error ? err.message : "Failed to fetch weather data");
+      const weatherData = data as unknown as WeatherResponse;
+
+      if (error) {
+        setError(error);
+        setDayData(null);
+      } else if (weatherData.days?.[0]) {
+        setDayData(weatherData.days[0]);
+        setError(null);
+      } else {
+        setError("No weather data available");
         setDayData(null);
       }
-    };
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Failed to fetch weather data");
+      setDayData(null);
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
+  useEffect(() => {
     if (location) {
       fetchData();
     }
@@ -151,7 +155,16 @@ export function WeatherPanel({ date, location, timeRange, className }: WeatherPa
             </h2>
           </div>
           <div className="rounded-lg border border-red-200 bg-red-50 p-4 text-red-700 dark:border-red-900/50 dark:bg-red-900/20 dark:text-red-200">
-            <p className="text-sm">{error}</p>
+            <div className="flex flex-col items-center gap-3">
+              <p className="text-sm">{error}</p>
+              <button
+                onClick={fetchData}
+                disabled={isLoading}
+                className="rounded-md bg-red-100 px-3 py-1.5 text-sm font-medium text-red-700 hover:bg-red-200 dark:bg-red-900/40 dark:text-red-200 dark:hover:bg-red-900/60 disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                {isLoading ? 'Retrying...' : 'Retry'}
+              </button>
+            </div>
           </div>
         </div>
       </div>
