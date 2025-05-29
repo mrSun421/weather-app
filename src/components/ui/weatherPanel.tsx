@@ -448,7 +448,7 @@ export function WeatherPanel({ date, location, timeRange, className, unitGroup =
           </h2>
           <button
             onClick={() => setShowTempDialog(true)}
-            className="flex items-center gap-3 text-steel_blue dark:text-mindaro hover:opacity-80 transition-opacity"
+            className="flex items-center gap-3 text-steel_blue dark:text-mindaro hover:opacity-80 transition-opacity cursor-pointer"
           >
             <span className="material-symbols-outlined !text-[64px]" style={{ fontSize: '64px' }}>
               {WeatherIcons[dayData.icon]}
