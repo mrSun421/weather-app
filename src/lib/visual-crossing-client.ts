@@ -1,5 +1,6 @@
 import createClient from 'openapi-fetch';
 import type { paths } from '@/lib/visual-crossing-schema';
+import { startOfDay, addDays, getUnixTime,  isBefore } from 'date-fns';
 
 export type UnitGroup = 'us' | 'uk' | 'metric' | 'base';
 
@@ -39,7 +40,57 @@ export async function fetchWeatherData({ location, date, unitGroup = 'us', inclu
     baseUrl: "https://weather.visualcrossing.com/"
   });
 
-  const { data, error, response } = await client.GET("/VisualCrossingWebServices/rest/services/timeline/{location}/{startdate}", {
+  const today = startOfDay(new Date());
+  const isHistoricalData = isBefore(date, today);
+
+
+  if (isHistoricalData) {
+    const { data, error } = await client.GET("/VisualCrossingWebServices/rest/services/weatherdata/history", {
+      params: {
+        query: {
+          key: import.meta.env.VITE_WEATHER_API_KEY,
+          contentType: "json",
+          unitGroup,
+          locations: location,
+          startDateTime: String(getUnixTime(date)),
+          endDateTime: String(getUnixTime(addDays(date, 1))),
+          aggregateHours: "1", // Get hourly data
+          includeNormals: false,
+        }
+      }
+    });
+
+    if (error) {
+      throw new Error(error);
+    }
+
+    // Transform historical data to match our WeatherResponse format
+    const historicalData = data as any;
+    const weatherData: WeatherResponse = {
+      days: [{
+        datetimeEpoch: getUnixTime(date),
+        temp: historicalData.locations[location]?.values[0]?.temp ?? 0,
+        precipprob: historicalData.locations[location]?.values[0]?.precip ?? 0,
+        severerisk: 0, // Historical data doesn't include severe risk
+        icon: "clear-day", // Default icon as historical data doesn't include icons
+        windspeed: historicalData.locations[location]?.values[0]?.wspd ?? 0,
+        hours: historicalData.locations[location]?.values.map((hour: any) => ({
+          datetimeEpoch: getUnixTime(new Date(hour.datetime)),
+          temp: hour.temp,
+          feelslike: hour.feelslike ?? hour.temp,
+          windspeed: hour.wspd ?? 0,
+          windgust: hour.wgust ?? 0,
+          precipprob: hour.precip ?? 0,
+        }))
+      }],
+      unitGroup
+    };
+
+    return weatherData;
+  }
+
+  // For forecast data, use the timeline endpoint as before
+  const { data, error } = await client.GET("/VisualCrossingWebServices/rest/services/timeline/{location}/{startdate}", {
     params: {
       query: {
         key: import.meta.env.VITE_WEATHER_API_KEY,
@@ -50,7 +101,7 @@ export async function fetchWeatherData({ location, date, unitGroup = 'us', inclu
       },
       path: {
         location,
-        startdate: String(Math.floor(date.getTime() / 1000)), // Convert to Unix timestamp
+        startdate: String(getUnixTime(date)),
       }
     }
   });
