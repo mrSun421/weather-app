@@ -6,6 +6,7 @@ import { useEffect, useState } from 'react';
 import { type WeatherDayData, type UnitGroup, fetchWeatherData } from '@/lib/visual-crossing-client';
 import { useFont } from "@/lib/fontContext";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { ShareButtons } from "@/components/ui/shareButtons";
 
 interface WeatherStatProps {
   icon: string;
@@ -535,6 +536,13 @@ export function WeatherPanel({ date, location, timeRange, className, unitGroup =
               <p>No hourly data available</p>
             </div>
           )}
+        </div>
+
+        <div className="pt-4 border-t border-ash_gray/10 dark:border-mindaro/10">
+          <ShareButtons
+            title={`Weather in ${location}`}
+            text={`${format(date, "MMMM d")}: ${dayData.temp}${getUnitSymbol('temp')}, ${dayData.icon.split('-').join(' ')}. Wind: ${dayData.windspeed}${getUnitSymbol('wind')}. ${dayData.precipprob}% chance of rain. ${shouldCancel ? '❌ Recommendation: Cancel outdoor activities.' : '✅ Weather looks good for outdoor activities!'}`}
+          />
         </div>
 
         <Dialog open={showFeelsLikeDialog} onOpenChange={setShowFeelsLikeDialog}>
