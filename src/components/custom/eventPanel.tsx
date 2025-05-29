@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react"
 import { WeatherCarousel } from "@/components/custom/weatherCarousel";
 import { addDays, nextMonday, nextSunday, nextWednesday, nextFriday, nextTuesday, nextThursday, nextSaturday } from 'date-fns';
-import { DatePickerWithRange } from "@/components/ui/datePickerWithRange";
+import { DatePickerWithRange } from "@/components/custom/datePickerWithRange";
 import { type DateRange } from "react-day-picker";
 import {
   Select,

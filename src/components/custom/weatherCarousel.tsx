@@ -42,9 +42,9 @@ export function WeatherCarousel({ dates, location, timeRange, onExtend, unitGrou
           }
         }}
       >
-        <CarouselContent>
+        <CarouselContent className="h-[calc(100dvh-4rem)]">
           {dates.map((date) => (
-            <CarouselItem key={date.getTime()} className="sm:basis-1/2">
+            <CarouselItem key={date.getTime()} className="sm:basis-1/2 h-full">
               <LazyWeatherPanel
                 date={date}
                 location={location}
@@ -54,7 +54,7 @@ export function WeatherCarousel({ dates, location, timeRange, onExtend, unitGrou
               />
             </CarouselItem>
           ))}
-          <CarouselItem className="sm:basis-1/2">
+          <CarouselItem className="sm:basis-1/2 h-full">
             <div className="flex items-center justify-center h-full min-h-[300px] rounded-xl border border-dashed transition-colors hover:border-primary dark:hover:border-primary">
               <Button 
                 variant="ghost" 
