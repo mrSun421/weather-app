@@ -10,8 +10,8 @@ interface LocationEditorProps {
 
 export function LocationEditor({ location, setLocation, className }: LocationEditorProps) {
   const debouncedSetLocation = useRef(
-    debounce((value: string) => {
-      setLocation(value);
+    debounce((value: unknown) => {
+      setLocation(value as string);
     }, 500)
   ).current;
 
