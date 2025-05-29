@@ -42,24 +42,23 @@ export function WeatherCarousel({ dates, location, timeRange, onExtend, unitGrou
           }
         }}
       >
-        <CarouselContent className="h-[calc(100dvh-4rem)]">
+        <CarouselContent>
           {dates.map((date) => (
-            <CarouselItem key={date.getTime()} className="sm:basis-1/2 h-full">
+            <CarouselItem key={date.getTime()} className="sm:basis-1/2">
               <LazyWeatherPanel
                 date={date}
                 location={location}
                 timeRange={timeRange}
-                className="h-full"
                 unitGroup={unitGroup}
               />
             </CarouselItem>
           ))}
-          <CarouselItem className="sm:basis-1/2 h-full">
-            <div className="flex items-center justify-center h-full min-h-[300px] rounded-xl border border-dashed transition-colors hover:border-primary dark:hover:border-primary">
+          <CarouselItem className="sm:basis-1/2">
+            <div className="flex items-center justify-center min-h-[300px] rounded-xl border border-dashed transition-colors hover:border-primary dark:hover:border-primary">
               <Button 
                 variant="ghost" 
                 onClick={onExtend}
-                className="flex flex-col items-center gap-4 p-8 hover:bg-transparent active:scale-95 transition-transform active:bg-accent dark:active:bg-secondary rounded-lg w-full h-full"
+                className="flex flex-col items-center gap-4 p-8 hover:bg-transparent active:scale-95 transition-transform active:bg-accent dark:active:bg-secondary rounded-lg w-full"
               >
                 <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="transition-transform active:scale-90">
                   <path d="M12 5v14M5 12h14"/>

@@ -332,7 +332,7 @@ export function WeatherPanel({ date, location, timeRange, className, unitGroup =
       ...chartOptions.plugins,
       title: {
         display: true,
-        text: 'Temperature Over Time',
+        text: `Temperature Over Time (${getUnitSymbol('temp')})`,
         font: {
           size: 16,
           family: useShantellSans ? "Shantell Sans" : "Arial"
@@ -361,7 +361,7 @@ export function WeatherPanel({ date, location, timeRange, className, unitGroup =
       ...chartOptions.plugins,
       title: {
         display: true,
-        text: 'Feels Like Temperature Over Time',
+        text: `Feels Like Temperature Over Time (${getUnitSymbol('temp')})`,
         font: {
           size: 16,
           family: useShantellSans ? "Shantell Sans" : "Arial"
@@ -398,7 +398,7 @@ export function WeatherPanel({ date, location, timeRange, className, unitGroup =
       ...chartOptions.plugins,
       title: {
         display: true,
-        text: 'Wind Speed Over Time',
+        text: `Wind Speed Over Time (${getUnitSymbol('wind')})`,
         font: {
           size: 16,
           family: useShantellSans ? "Shantell Sans" : "Arial"
@@ -435,7 +435,7 @@ export function WeatherPanel({ date, location, timeRange, className, unitGroup =
       ...chartOptions.plugins,
       title: {
         display: true,
-        text: 'Precipitation Probability Over Time',
+        text: 'Precipitation Probability Over Time (%)',
         font: {
           size: 16,
           family: useShantellSans ? "Shantell Sans" : "Arial"
@@ -548,7 +548,7 @@ export function WeatherPanel({ date, location, timeRange, className, unitGroup =
         <Dialog open={showFeelsLikeDialog} onOpenChange={setShowFeelsLikeDialog}>
           <DialogContent className="sm:max-w-[600px]">
             <DialogHeader>
-              <DialogTitle>Feels Like Temperature Details</DialogTitle>
+              <DialogTitle>Feels Like Temperature</DialogTitle>
             </DialogHeader>
             <div className="h-[400px] pt-4">
               {hoursData.length > 0 ? (
@@ -565,7 +565,7 @@ export function WeatherPanel({ date, location, timeRange, className, unitGroup =
         <Dialog open={showTempDialog} onOpenChange={setShowTempDialog}>
           <DialogContent className="sm:max-w-[600px]">
             <DialogHeader>
-              <DialogTitle>Temperature Details</DialogTitle>
+              <DialogTitle>Temperature</DialogTitle>
             </DialogHeader>
             <div className="h-[400px] pt-4">
               {hoursData.length > 0 ? (
@@ -582,7 +582,7 @@ export function WeatherPanel({ date, location, timeRange, className, unitGroup =
         <Dialog open={showWindDialog} onOpenChange={setShowWindDialog}>
           <DialogContent className="sm:max-w-[600px]">
             <DialogHeader>
-              <DialogTitle>Wind Speed Details</DialogTitle>
+              <DialogTitle>Wind Speed</DialogTitle>
             </DialogHeader>
             <div className="h-[400px] pt-4">
               {hoursData.length > 0 ? (
@@ -602,7 +602,7 @@ export function WeatherPanel({ date, location, timeRange, className, unitGroup =
         <Dialog open={showRainDialog} onOpenChange={setShowRainDialog}>
           <DialogContent className="sm:max-w-[600px]">
             <DialogHeader>
-              <DialogTitle>Precipitation Probability Details</DialogTitle>
+              <DialogTitle>Precipitation Probability</DialogTitle>
             </DialogHeader>
             <div className="h-[400px] pt-4">
               {hoursData.length > 0 ? (
