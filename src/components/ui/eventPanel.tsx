@@ -176,11 +176,11 @@ export function EventPanel() {
 
   return (
     <div className="animate-in container mx-auto max-w-4xl px-4">
-      <div className="space-y-6">
+      <div className="space-y-8">
         <div className="rounded-lg bg-white/50 p-4 sm:p-6 shadow-sm backdrop-blur-sm dark:bg-slate-800/50 w-full">
-          <div className="space-y-4">
-            <div className="grid grid-cols-1 lg:grid-cols-2 items-center gap-4">
-              <div className="w-full max-w-[300px] justify-self-center lg:justify-self-end">
+          <div className="space-y-6">
+            <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 sm:gap-4 place-items-center">
+              <div className="w-full max-w-[350px] sm:max-w-[300px]">
                 <Tooltip>
                   <TooltipTrigger asChild>
                     <div>
@@ -195,7 +195,7 @@ export function EventPanel() {
                   </TooltipContent>
                 </Tooltip>
               </div>
-              <div className="w-full max-w-[300px] justify-self-center lg:justify-self-start">
+              <div className="w-full max-w-[350px] sm:max-w-[300px]">
                 <Tooltip>
                   <TooltipTrigger asChild>
                     <div>
@@ -213,30 +213,34 @@ export function EventPanel() {
               </div>
             </div>
 
-            <div className="flex flex-col sm:flex-row items-center gap-4 justify-center">
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  <div>
-                    <WeekdaySelector weekday={weekday} setWeekday={setWeekday} />
-                  </div>
-                </TooltipTrigger>
-                <TooltipContent>
-                  <p>Choose which day of the week to check weather for</p>
-                </TooltipContent>
-              </Tooltip>
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  <div>
-                    <PresetTimeSelector
-                      timeRange={timeRange}
-                      handlePresetUpdate={handlePresetUpdate}
-                    />
-                  </div>
-                </TooltipTrigger>
-                <TooltipContent>
-                  <p>Select a time range preset or customize your own</p>
-                </TooltipContent>
-              </Tooltip>
+            <div className="flex flex-col items-center gap-4 sm:flex-row sm:justify-center">
+              <div className="w-full max-w-[350px] sm:w-auto">
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <div>
+                      <WeekdaySelector weekday={weekday} setWeekday={setWeekday} />
+                    </div>
+                  </TooltipTrigger>
+                  <TooltipContent>
+                    <p>Choose which day of the week to check weather for</p>
+                  </TooltipContent>
+                </Tooltip>
+              </div>
+              <div className="w-full max-w-[350px] sm:w-auto">
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <div>
+                      <PresetTimeSelector
+                        timeRange={timeRange}
+                        handlePresetUpdate={handlePresetUpdate}
+                      />
+                    </div>
+                  </TooltipTrigger>
+                  <TooltipContent>
+                    <p>Select a time range preset or customize your own</p>
+                  </TooltipContent>
+                </Tooltip>
+              </div>
               <TimeDrawer timeRange={timeRange} setTimeRange={setTimeRange} />
             </div>
           </div>

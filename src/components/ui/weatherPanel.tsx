@@ -19,7 +19,7 @@ function WeatherStat({ icon, label, value, unit = '', onClick }: WeatherStatProp
   const Wrapper = onClick ? 'button' : 'div';
   const wrapperClassName = cn(
     "flex items-center gap-2 rounded-lg bg-mindaro/50 p-3 dark:bg-ultra_violet-300/50 w-full text-left",
-    onClick && "hover:opacity-80 transition-opacity cursor-pointer"
+    onClick && "hover:opacity-80 active:scale-95 transition-all cursor-pointer relative after:absolute after:inset-0 after:rounded-lg after:border after:border-steel_blue/10 after:dark:border-mindaro/10"
   );
 
   return (
@@ -440,56 +440,65 @@ export function WeatherPanel({ date, location, timeRange, className, unitGroup =
   };
 
   return (
-    <div className={cn("p-6 transition-all duration-200 border border-ash_gray/20 dark:border-mindaro/20 rounded-xl", className)}>
-      <div className="space-y-6">
-        <div className="flex flex-col items-center gap-4 mb-8">
-          <h2 className="text-xl font-semibold text-ultra_violet dark:text-cream text-center">
+    <div className={cn("p-4 sm:p-6 transition-all duration-200 border border-ash_gray/10 dark:border-mindaro/10 rounded-xl", className)}>
+      <div className="space-y-4 sm:space-y-6">
+        <div className="flex flex-col items-center gap-3 sm:gap-4 mb-6 sm:mb-8">
+          <h2 className="text-lg sm:text-xl font-semibold text-ultra_violet dark:text-cream text-center">
             {format(date, "EEEE, MMMM d")}
           </h2>
           <button
             onClick={() => setShowTempDialog(true)}
-            className="flex items-center gap-3 text-steel_blue dark:text-mindaro hover:opacity-80 transition-opacity cursor-pointer"
+            className="flex items-center gap-2 sm:gap-3 text-steel_blue dark:text-mindaro hover:opacity-80 active:scale-95 transition-all cursor-pointer rounded-lg p-2 relative after:absolute after:inset-0 after:rounded-lg after:border after:border-steel_blue/10 after:dark:border-mindaro/10"
           >
-            <span className="material-symbols-outlined !text-[64px]" style={{ fontSize: '64px' }}>
+            <span className="material-symbols-outlined !text-[48px] sm:!text-[64px]" style={{ fontSize: '48px' }}>
               {WeatherIcons[dayData.icon]}
             </span>
-            <span className="text-4xl font-medium">
+            <span className="text-3xl sm:text-4xl font-medium">
               {dayData.temp}{getUnitSymbol('temp')}
             </span>
           </button>
         </div>
 
-        <div className="grid grid-cols-3 gap-4">
-          <WeatherStat 
-            icon="thermostat"
-            label="Feels Like"
-            value={hourBasedData[0]?.feelslike ?? dayData.temp}
-            unit={getUnitSymbol('temp')}
-            onClick={() => setShowFeelsLikeDialog(true)}
-          />
-          <WeatherStat 
-            icon="air"
-            label="Wind"
-            value={dayData.windspeed}
-            unit={getUnitSymbol('wind')}
-            onClick={() => setShowWindDialog(true)}
-          />
-          <WeatherStat 
-            icon="water_drop"
-            label="Rain Chance"
-            value={dayData.precipprob}
-            unit="%"
-            onClick={() => setShowRainDialog(true)}
-          />
+        <div className="flex flex-col gap-3 sm:gap-4 max-w-sm mx-auto w-full">
+          <div className="relative group">
+            <div className="absolute -inset-1 bg-steel_blue/5 dark:bg-mindaro/5 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity"></div>
+            <WeatherStat 
+              icon="thermostat"
+              label="Feels Like"
+              value={hourBasedData[0]?.feelslike ?? dayData.temp}
+              unit={getUnitSymbol('temp')}
+              onClick={() => setShowFeelsLikeDialog(true)}
+            />
+          </div>
+          <div className="relative group">
+            <div className="absolute -inset-1 bg-steel_blue/5 dark:bg-mindaro/5 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity"></div>
+            <WeatherStat 
+              icon="air"
+              label="Wind"
+              value={dayData.windspeed}
+              unit={getUnitSymbol('wind')}
+              onClick={() => setShowWindDialog(true)}
+            />
+          </div>
+          <div className="relative group">
+            <div className="absolute -inset-1 bg-steel_blue/5 dark:bg-mindaro/5 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity"></div>
+            <WeatherStat 
+              icon="water_drop"
+              label="Rain Chance"
+              value={dayData.precipprob}
+              unit="%"
+              onClick={() => setShowRainDialog(true)}
+            />
+          </div>
         </div>
 
         <div className={cn(
-          "rounded-lg border p-4",
+          "rounded-lg border p-3 sm:p-4 text-sm",
           shouldCancel 
-            ? "border-red-200 bg-red-50 text-red-700 dark:border-red-900/50 dark:bg-red-900/20 dark:text-red-200" 
-            : "border-green-200 bg-green-50 text-green-700 dark:border-green-900/50 dark:bg-green-900/20 dark:text-green-200"
+            ? "border-red-200/30 bg-red-50/50 text-red-700 dark:border-red-900/20 dark:bg-red-900/10 dark:text-red-200" 
+            : "border-green-200/30 bg-green-50/50 text-green-700 dark:border-green-900/20 dark:bg-green-900/10 dark:text-green-200"
         )}>
-          <p className="text-sm">{comment}</p>
+          <p className="break-words">{comment}</p>
         </div>
 
         <div className="h-[200px]">
