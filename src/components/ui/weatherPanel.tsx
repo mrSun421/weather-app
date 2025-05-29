@@ -132,7 +132,26 @@ export function WeatherPanel({ date, location, timeRange, className, unitGroup =
       setDayData(weatherData.days[0]);
       setError(null);
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Failed to fetch weather data");
+      let errorMessage = "";
+      
+      if (err instanceof Error) {
+        // Map different error types to user-friendly messages without exposing API details
+        if (err.message.includes("key")) {
+          errorMessage = "We're having trouble connecting to our weather service. Please try again later.";
+        } else if (err.message.toLowerCase().includes("location")) {
+          errorMessage = "We couldn't find weather data for this location. Please check the spelling or try a nearby city.";
+        } else if (err.message.includes("No weather data available")) {
+          errorMessage = "Weather data isn't available for this date and location. Please try a different date or location.";
+        } else if (err.message.toLowerCase().includes("network") || err.message.toLowerCase().includes("failed to fetch")) {
+          errorMessage = "Unable to connect to weather service. Please check your internet connection and try again.";
+        } else {
+          errorMessage = "Unable to load weather data at this time. Please try again later.";
+        }
+      } else {
+        errorMessage = "Unable to load weather data at this time. Please try again later.";
+      }
+      
+      setError(errorMessage);
       setDayData(null);
     } finally {
       setIsLoading(false);
@@ -170,15 +189,22 @@ export function WeatherPanel({ date, location, timeRange, className, unitGroup =
             </h2>
           </div>
           <div className="rounded-lg border border-red-200 bg-red-50 p-4 text-red-700 dark:border-red-900/50 dark:bg-red-900/20 dark:text-red-200">
-            <div className="flex flex-col items-center gap-3">
-              <p className="text-sm">{error}</p>
-              <button
-                onClick={fetchData}
-                disabled={isLoading}
-                className="rounded-md bg-red-100 px-3 py-1.5 text-sm font-medium text-red-700 hover:bg-red-200 dark:bg-red-900/40 dark:text-red-200 dark:hover:bg-red-900/60 disabled:opacity-50 disabled:cursor-not-allowed"
-              >
-                {isLoading ? 'Retrying...' : 'Retry'}
-              </button>
+            <div className="flex flex-col items-center gap-4">
+              <div className="flex items-center gap-2">
+                <span className="material-symbols-outlined">error</span>
+                <p className="text-base font-medium">Unable to Load Weather</p>
+              </div>
+              <p className="text-sm text-center">{error}</p>
+              <div className="flex gap-2">
+                <button
+                  onClick={fetchData}
+                  disabled={isLoading}
+                  className="rounded-md bg-red-100 px-4 py-2 text-sm font-medium text-red-700 hover:bg-red-200 dark:bg-red-900/40 dark:text-red-200 dark:hover:bg-red-900/60 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
+                >
+                  <span className="material-symbols-outlined text-base">refresh</span>
+                  {isLoading ? 'Loading...' : 'Try Again'}
+                </button>
+              </div>
             </div>
           </div>
         </div>
