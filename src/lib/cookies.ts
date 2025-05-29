@@ -29,6 +29,6 @@ export function parseJSONCookie<T>(name: string, defaultValue: T): T {
   }
 }
 
-export function setJSONCookie(name: string, value: any, days: number = 30) {
+export function setJSONCookie<T>(name: string, value: T, days: number = 30) {
   setCookie(name, JSON.stringify(value), days);
 } 

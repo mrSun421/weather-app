@@ -27,7 +27,7 @@ interface TimePickerWithRangeProps {
 export function TimePickerWithRange({ className, timeRange, setTimeRange }: TimePickerWithRangeProps) {
 
   function handleStartingTimeUpdate(value: string) {
-    let newTimeRange: TimeRange = {
+    const newTimeRange: TimeRange = {
       preset: "custom",
       from: timeRange.from,
       to: timeRange.to,
@@ -40,7 +40,7 @@ export function TimePickerWithRange({ className, timeRange, setTimeRange }: Time
     setTimeRange(newTimeRange);
   }
   function handleEndingTimeUpdate(value: string) {
-    let newTimeRange: TimeRange = {
+    const newTimeRange: TimeRange = {
       preset: "custom",
       from: timeRange.from,
       to: timeRange.to,

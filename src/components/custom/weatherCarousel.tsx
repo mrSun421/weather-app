@@ -1,4 +1,4 @@
-import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "@/components/ui/carousel";
+import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious, type CarouselApi } from "@/components/ui/carousel";
 import { LazyWeatherPanel } from "./lazyWeatherPanel";
 import { Button } from "../ui/button";
 import { Progress } from "../ui/progress";
@@ -18,7 +18,7 @@ interface WeatherCarouselProps {
 
 export function WeatherCarousel({ dates, location, timeRange, onExtend, unitGroup = 'us' }: WeatherCarouselProps) {
   const [progress, setProgress] = useState(0);
-  const [api, setApi] = useState<any>(null);
+  const [api, setApi] = useState<CarouselApi | null>(null);
 
   useEffect(() => {
     if (!api) return;

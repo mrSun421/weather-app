@@ -1,5 +1,6 @@
 import { cn } from '@/lib/utils';
 import { CategoryScale, Chart, Legend, LinearScale, LineElement, PointElement, Title, Tooltip } from 'chart.js/auto';
+import type { TooltipItem } from 'chart.js';
 import { isAfter, isBefore, format } from 'date-fns';
 import { Line } from 'react-chartjs-2';
 import { useEffect, useState } from 'react';
@@ -407,7 +408,7 @@ export function WeatherPanel({ date, location, timeRange, className, unitGroup =
       },
       tooltip: {
         callbacks: {
-          label: function(context: any) {
+          label: function(context: TooltipItem<'line'>) {
             return `${context.dataset.label}: ${context.raw}${getUnitSymbol('wind')}`;
           }
         }
@@ -444,7 +445,7 @@ export function WeatherPanel({ date, location, timeRange, className, unitGroup =
       },
       tooltip: {
         callbacks: {
-          label: function(context: any) {
+          label: function(context: TooltipItem<'line'>) {
             return `${context.dataset.label}: ${context.raw}%`;
           }
         }
@@ -458,7 +459,7 @@ export function WeatherPanel({ date, location, timeRange, className, unitGroup =
         max: 100,
         ticks: {
           ...chartOptions.scales.y.ticks,
-          callback: function(this: any, value: number | string) {
+          callback: function(value: number | string) {
             return value + '%';
           }
         }

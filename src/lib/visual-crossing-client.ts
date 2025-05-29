@@ -4,6 +4,25 @@ import { startOfDay, addDays, getUnixTime,  isBefore } from 'date-fns';
 
 export type UnitGroup = 'us' | 'uk' | 'metric' | 'base';
 
+interface HistoricalWeatherValue {
+  datetime: string;
+  temp: number;
+  feelslike?: number;
+  wspd?: number;
+  wgust?: number;
+  precip?: number;
+}
+
+interface HistoricalWeatherLocation {
+  values: HistoricalWeatherValue[];
+}
+
+interface HistoricalWeatherResponse {
+  locations: {
+    [location: string]: HistoricalWeatherLocation;
+  };
+}
+
 export interface WeatherDayData {
   datetimeEpoch: number;
   hours?: Array<{
@@ -65,7 +84,7 @@ export async function fetchWeatherData({ location, date, unitGroup = 'us', inclu
     }
 
     // Transform historical data to match our WeatherResponse format
-    const historicalData = data as any;
+    const historicalData = data as unknown as HistoricalWeatherResponse;
     const weatherData: WeatherResponse = {
       days: [{
         datetimeEpoch: getUnixTime(date),
@@ -74,7 +93,7 @@ export async function fetchWeatherData({ location, date, unitGroup = 'us', inclu
         severerisk: 0, // Historical data doesn't include severe risk
         icon: "clear-day", // Default icon as historical data doesn't include icons
         windspeed: historicalData.locations[location]?.values[0]?.wspd ?? 0,
-        hours: historicalData.locations[location]?.values.map((hour: any) => ({
+        hours: historicalData.locations[location]?.values.map((hour: HistoricalWeatherValue) => ({
           datetimeEpoch: getUnixTime(new Date(hour.datetime)),
           temp: hour.temp,
           feelslike: hour.feelslike ?? hour.temp,
