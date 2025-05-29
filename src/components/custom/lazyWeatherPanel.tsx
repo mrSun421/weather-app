@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
-import { WeatherPanel } from '@/components/ui/weatherPanel';
+import { WeatherPanel } from '@/components/custom/weatherPanel';
 import { type UnitGroup } from '@/lib/visual-crossing-client';
 
 interface LazyWeatherPanelProps {

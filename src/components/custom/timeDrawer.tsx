@@ -1,7 +1,7 @@
 "use client"
 
 import { Button } from "@/components/ui/button"
-import { TimePickerWithRange } from "@/components/ui/timePicker"
+import { TimePickerWithRange } from "@/components/custom/timePicker"
 import {
   Drawer,
   DrawerContent,

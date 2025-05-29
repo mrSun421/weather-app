@@ -1,7 +1,7 @@
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "@/components/ui/carousel";
 import { LazyWeatherPanel } from "./lazyWeatherPanel";
-import { Button } from "./button";
-import { Progress } from "./progress";
+import { Button } from "../ui/button";
+import { Progress } from "../ui/progress";
 import { type UnitGroup } from '@/lib/visual-crossing-client';
 import { useState, useEffect } from 'react';
 

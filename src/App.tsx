@@ -1,6 +1,6 @@
-import { EventPanel } from "@/components/ui/eventPanel";
+import { EventPanel } from "@/components/custom/eventPanel";
 import { Button } from "@/components/ui/button";
-import { SettingsMenu } from "@/components/ui/settingsMenu";
+import { SettingsMenu } from "@/components/custom/settingsMenu";
 import { useState } from "react";
 import { ThemeProvider } from "@/lib/themeContext";
 import { UnitProvider } from "@/lib/unitContext";

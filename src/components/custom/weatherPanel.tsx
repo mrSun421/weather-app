@@ -6,7 +6,7 @@ import { useEffect, useState } from 'react';
 import { type WeatherDayData, type UnitGroup, fetchWeatherData } from '@/lib/visual-crossing-client';
 import { useFont } from "@/lib/fontContext";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { ShareButtons } from "@/components/ui/shareButtons";
+import { ShareButtons } from "@/components/custom/shareButtons";
 
 interface WeatherStatProps {
   icon: string;

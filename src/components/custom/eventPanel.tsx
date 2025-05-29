@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react"
-import { WeatherCarousel } from "@/components/ui/weatherCarousel";
+import { WeatherCarousel } from "@/components/custom/weatherCarousel";
 import { addDays, nextMonday, nextSunday, nextWednesday, nextFriday, nextTuesday, nextThursday, nextSaturday } from 'date-fns';
 import { DatePickerWithRange } from "@/components/ui/datePickerWithRange";
 import { type DateRange } from "react-day-picker";
@@ -12,8 +12,8 @@ import {
   SelectGroup,
   SelectLabel,
 } from "@/components/ui/select"
-import { LocationEditor } from "@/components/ui/locationEditor";
-import { TimeDrawer } from "@/components/ui/timeDrawer";
+import { LocationEditor } from "@/components/custom/locationEditor";
+import { TimeDrawer } from "@/components/custom/timeDrawer";
 import { type TimeRange, type TimePreset } from "@/types/time";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { parseJSONCookie, setJSONCookie } from "@/lib/cookies";
