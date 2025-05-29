@@ -162,7 +162,7 @@ export function WeatherPanel({ date, location, timeRange, className, unitGroup =
 
   if (error) {
     return (
-      <div className={cn("p-6 transition-all duration-200", className)}>
+      <div className={cn("p-6 transition-all duration-200 border border-ash_gray/20 dark:border-mindaro/20 rounded-xl", className)}>
         <div className="space-y-6">
           <div className="flex items-center justify-between">
             <h2 className="text-2xl font-semibold text-ultra_violet dark:text-cream">
@@ -188,7 +188,7 @@ export function WeatherPanel({ date, location, timeRange, className, unitGroup =
 
   if (!dayData) {
     return (
-      <div className={cn("p-6 transition-all duration-200", className)}>
+      <div className={cn("p-6 transition-all duration-200 border border-ash_gray/20 dark:border-mindaro/20 rounded-xl", className)}>
         <div className="space-y-6">
           <div className="flex items-center justify-between">
             <h2 className="text-2xl font-semibold text-ultra_violet dark:text-cream">
@@ -440,7 +440,7 @@ export function WeatherPanel({ date, location, timeRange, className, unitGroup =
   };
 
   return (
-    <div className={cn("p-6 transition-all duration-200", className)}>
+    <div className={cn("p-6 transition-all duration-200 border border-ash_gray/20 dark:border-mindaro/20 rounded-xl", className)}>
       <div className="space-y-6">
         <div className="flex flex-col items-center gap-4 mb-8">
           <h2 className="text-xl font-semibold text-ultra_violet dark:text-cream text-center">
