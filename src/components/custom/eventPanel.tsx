@@ -245,7 +245,7 @@ export function EventPanel() {
           <div className="flex justify-center">
             {!location ? (
               <div className="flex items-center justify-center p-8 text-ash_gray dark:text-mindaro/70">
-                <span className="text-lg font-medium">Add a location to view weather data</span>
+                <span className="text-lg font-medium text-center">Add a location to view weather data</span>
               </div>
             ) : dates.length === 0 ? (
               <div className="flex items-center justify-center p-8 text-ash_gray dark:text-mindaro/70">
