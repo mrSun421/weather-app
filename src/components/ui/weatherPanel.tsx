@@ -216,16 +216,16 @@ export function WeatherPanel({ date, location, timeRange, className, unitGroup =
     return (
       <div className={cn("p-6 transition-all duration-200 border border-ash_gray/20 dark:border-mindaro/20 rounded-xl", className)}>
         <div className="space-y-6">
-          <div className="flex items-center justify-between">
+          <div className="flex items-center justify-center">
             <h2 className="text-2xl font-semibold text-ultra_violet dark:text-cream">
               {format(date, "EEEE, MMMM d")}
             </h2>
-            <div className="flex items-center gap-2 text-steel_blue dark:text-mindaro">
-              <span className="material-symbols-outlined text-3xl animate-pulse">
-                cloud
-              </span>
-              <span className="text-2xl font-medium">Loading...</span>
-            </div>
+          </div>
+          <div className="flex flex-col items-center gap-4">
+            <span className="material-symbols-outlined text-3xl animate-pulse text-steel_blue dark:text-mindaro">
+              cloud
+            </span>
+            <span className="text-2xl font-medium text-steel_blue dark:text-mindaro">Loading...</span>
           </div>
           <div className="h-[200px] flex items-center justify-center">
             <div className="text-ash_gray dark:text-mindaro/70">
